@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Feather, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../context/ModalContext';
 import LoginModal from './LoginModal';
 import GetListedModal from './GetListedModal';
+import logo from '../assets/logo.png';
 
 export default function Navbar() {
     const { theme } = useTheme();
@@ -35,13 +36,7 @@ export default function Navbar() {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link to="/" className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full border-2 border-accent flex items-center justify-center">
-                                <Feather className="w-5 h-5 text-primary" />
-                            </div>
-                            <div className="flex flex-col leading-none">
-                                <span className="text-lg font-bold text-text tracking-wide">NOTARIES</span>
-                                <span className="text-sm font-medium text-accent tracking-widest">4 HIRE</span>
-                            </div>
+                            <img src={logo} alt="Notaries 4 Hire" className="h-16 w-auto" />
                         </Link>
                     </div>
 
