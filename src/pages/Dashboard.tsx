@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { User, Calendar, Settings, ToggleRight, Copy, Check } from 'lucide-react';
+import { User, Calendar, Settings, Copy, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
+import EditProfileModal from '../components/EditProfileModal';
+import AvailabilityModal from '../components/AvailabilityModal';
+import AccountSettingsModal from '../components/AccountSettingsModal';
 
 export default function Dashboard() {
     const { user, isNotary, loading } = useAuth();
     const navigate = useNavigate();
     const [affiliateCode, setAffiliateCode] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
+
+    // Modal states
+    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+    const [isAvailabilityOpen, setIsAvailabilityOpen] = useState(false);
+    const [isAccountSettingsOpen, setIsAccountSettingsOpen] = useState(false);
 
     useEffect(() => {
         if (!loading && !user) {
@@ -75,7 +83,10 @@ export default function Dashboard() {
 
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className="bg-white dark:bg-surface p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer group">
+                    <div
+                        onClick={() => setIsEditProfileOpen(true)}
+                        className="bg-white dark:bg-surface p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer group"
+                    >
                         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
                             <User className="w-6 h-6" />
                         </div>
@@ -83,7 +94,10 @@ export default function Dashboard() {
                         <p className="text-text-secondary text-sm">Update your bio, services, and contact information.</p>
                     </div>
 
-                    <div className="bg-white dark:bg-surface p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer group">
+                    <div
+                        onClick={() => setIsAvailabilityOpen(true)}
+                        className="bg-white dark:bg-surface p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer group"
+                    >
                         <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent mb-4 group-hover:scale-110 transition-transform">
                             <Calendar className="w-6 h-6" />
                         </div>
@@ -91,7 +105,10 @@ export default function Dashboard() {
                         <p className="text-text-secondary text-sm">Set your working hours and schedule.</p>
                     </div>
 
-                    <div className="bg-white dark:bg-surface p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer group">
+                    <div
+                        onClick={() => setIsAccountSettingsOpen(true)}
+                        className="bg-white dark:bg-surface p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer group"
+                    >
                         <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-text-secondary mb-4 group-hover:scale-110 transition-transform">
                             <Settings className="w-6 h-6" />
                         </div>
@@ -100,6 +117,11 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
+
+            {/* Modals */}
+            <EditProfileModal isOpen={isEditProfileOpen} onClose={() => setIsEditProfileOpen(false)} />
+            <AvailabilityModal isOpen={isAvailabilityOpen} onClose={() => setIsAvailabilityOpen(false)} />
+            <AccountSettingsModal isOpen={isAccountSettingsOpen} onClose={() => setIsAccountSettingsOpen(false)} />
         </div>
     );
 }

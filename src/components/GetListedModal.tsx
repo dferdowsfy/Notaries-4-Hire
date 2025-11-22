@@ -68,7 +68,10 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
                 rating: 0,
                 reviewCount: 0,
                 createdAt: new Date().toISOString(),
-                affiliateCode: user.uid.substring(0, 8).toUpperCase() // Simple affiliate code generation
+                affiliateCode: user.uid.substring(0, 8).toUpperCase(),
+                subscriptionPlan: 'basic', // Default plan
+                photoUrl: null,
+                availability: {}
             });
 
             onClose();
