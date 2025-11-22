@@ -176,6 +176,52 @@ export default function Profile() {
                             </div>
                         </div>
 
+                        {/* Why Choose Me Section */}
+                        <div className="bg-white dark:bg-surface rounded-xl p-8 border border-slate-100 dark:border-slate-800">
+                            <h2 className="text-2xl font-serif text-text mb-8 text-center">Why Choose Me</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="text-center">
+                                    <div
+                                        className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl"
+                                        style={{
+                                            backgroundColor: `${customization.primaryColor}20`,
+                                            color: customization.primaryColor
+                                        }}
+                                    >
+                                        ✓
+                                    </div>
+                                    <h4 className="font-bold text-text mb-2">Certified Professional</h4>
+                                    <p className="text-sm text-text-secondary">Licensed and insured notary</p>
+                                </div>
+                                <div className="text-center">
+                                    <div
+                                        className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl"
+                                        style={{
+                                            backgroundColor: `${customization.accentColor}20`,
+                                            color: customization.accentColor
+                                        }}
+                                    >
+                                        ⚡
+                                    </div>
+                                    <h4 className="font-bold text-text mb-2">Fast Service</h4>
+                                    <p className="text-sm text-text-secondary">Same-day appointments available</p>
+                                </div>
+                                <div className="text-center">
+                                    <div
+                                        className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl"
+                                        style={{
+                                            backgroundColor: `${customization.primaryColor}20`,
+                                            color: customization.primaryColor
+                                        }}
+                                    >
+                                        ★
+                                    </div>
+                                    <h4 className="font-bold text-text mb-2">5-Star Rated</h4>
+                                    <p className="text-sm text-text-secondary">Trusted by hundreds of clients</p>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Reviews */}
                         <ReviewSection />
                     </div>
