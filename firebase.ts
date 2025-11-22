@@ -1,11 +1,12 @@
-
-import { initializeApp } from 'firebase/app';
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getAnalytics } from 'firebase/analytics';
 
-// User provided configuration for biomednlp-8432a
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAci8d-gdQIu-1p_uk8HVX4hZwmOMKGeSs",
   authDomain: "biomednlp-8432a.firebaseapp.com",
@@ -17,8 +18,10 @@ const firebaseConfig = {
   measurementId: "G-NWVREBLTWT"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+// Initialize Firebase services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
