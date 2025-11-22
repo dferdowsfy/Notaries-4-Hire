@@ -36,7 +36,7 @@ export default function Navbar() {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link to="/" className="flex items-center gap-3">
-                            <img src={logo} alt="Notaries 4 Hire" className="h-16 w-auto" />
+                            <img src={logo} alt="Notaries 4 Hire" className="h-28 w-auto" />
                         </Link>
                     </div>
 
