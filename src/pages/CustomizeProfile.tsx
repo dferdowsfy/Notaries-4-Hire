@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Save, Eye, ChevronLeft } from 'lucide-react';
+import { Save, Eye, ChevronLeft, Palette, Type } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -9,6 +9,7 @@ export default function CustomizeProfile() {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState<'colors' | 'text'>('colors');
 
     const [customization, setCustomization] = useState({
         primaryColor: '#0E2A57',
@@ -119,23 +120,44 @@ export default function CustomizeProfile() {
             {/* Main Content - Side by Side */}
             <div className="max-w-[1800px] mx-auto p-6">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    {/* Left Sidebar - Controls */}
+                    {/* Left Sidebar - Fixed Controls */}
                     <div className="lg:col-span-3">
-                        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden sticky top-24">
+                        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden sticky top-24 h-[calc(100vh-120px)] flex flex-col">
+                            {/* Header */}
                             <div className="p-6 border-b border-slate-200 bg-slate-50">
                                 <h2 className="font-bold text-lg text-text">Customize Your Page</h2>
                                 <p className="text-sm text-text-secondary mt-1">Design your public profile</p>
                             </div>
 
-                            <div className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-                                {/* Colors Section */}
-                                <div>
-                                    <h3 className="font-bold text-text mb-4 flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-primary"></div>
-                                        Colors
-                                    </h3>
+                            {/* Tabs */}
+                            <div className="flex border-b border-slate-200">
+                                <button
+                                    onClick={() => setActiveTab('colors')}
+                                    className={`flex-1 flex items-center justify-center gap-2 py-3 font-medium transition-colors ${activeTab === 'colors'
+                                            ? 'bg-primary text-white border-b-2 border-primary'
+                                            : 'text-text-secondary hover:bg-slate-50'
+                                        }`}
+                                >
+                                    <Palette className="w-4 h-4" />
+                                    Colors
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('text')}
+                                    className={`flex-1 flex items-center justify-center gap-2 py-3 font-medium transition-colors ${activeTab === 'text'
+                                            ? 'bg-primary text-white border-b-2 border-primary'
+                                            : 'text-text-secondary hover:bg-slate-50'
+                                        }`}
+                                >
+                                    <Type className="w-4 h-4" />
+                                    Text
+                                </button>
+                            </div>
 
-                                    <div className="space-y-4">
+                            {/* Tab Content - Scrollable */}
+                            <div className="flex-1 overflow-y-auto p-6">
+                                {activeTab === 'colors' && (
+                                    <div className="space-y-6">
+                                        {/* Color Pickers */}
                                         <div>
                                             <label className="block text-sm font-medium text-text mb-2">Primary Color</label>
                                             <div className="flex gap-2">
@@ -149,7 +171,7 @@ export default function CustomizeProfile() {
                                                     type="text"
                                                     value={customization.primaryColor}
                                                     onChange={(e) => setCustomization({ ...customization, primaryColor: e.target.value })}
-                                                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 font-mono text-sm"
+                                                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 font-mono text-sm uppercase"
                                                 />
                                             </div>
                                         </div>
@@ -167,50 +189,45 @@ export default function CustomizeProfile() {
                                                     type="text"
                                                     value={customization.accentColor}
                                                     onChange={(e) => setCustomization({ ...customization, accentColor: e.target.value })}
-                                                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 font-mono text-sm"
+                                                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 font-mono text-sm uppercase"
                                                 />
                                             </div>
                                         </div>
+
+                                        {/* Preset Themes */}
+                                        <div className="pt-4 border-t border-slate-200">
+                                            <label className="block text-sm font-medium text-text mb-3">Preset Themes</label>
+                                            <div className="space-y-2">
+                                                {presetThemes.map((theme, i) => (
+                                                    <button
+                                                        key={i}
+                                                        onClick={() => applyTheme(theme)}
+                                                        className="w-full flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-primary hover:bg-slate-50 transition-colors text-left"
+                                                    >
+                                                        <div className="flex gap-1">
+                                                            <div className="w-6 h-6 rounded" style={{ backgroundColor: theme.primary }} />
+                                                            <div className="w-6 h-6 rounded" style={{ backgroundColor: theme.accent }} />
+                                                        </div>
+                                                        <span className="text-sm font-medium text-text">{theme.name}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
-                                {/* Preset Themes */}
-                                <div className="pt-4 border-t border-slate-200">
-                                    <label className="block text-sm font-medium text-text mb-3">Preset Themes</label>
-                                    <div className="space-y-2">
-                                        {presetThemes.map((theme, i) => (
-                                            <button
-                                                key={i}
-                                                onClick={() => applyTheme(theme)}
-                                                className="w-full flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-primary transition-colors text-left"
-                                            >
-                                                <div className="flex gap-1">
-                                                    <div className="w-6 h-6 rounded" style={{ backgroundColor: theme.primary }} />
-                                                    <div className="w-6 h-6 rounded" style={{ backgroundColor: theme.accent }} />
-                                                </div>
-                                                <span className="text-sm font-medium text-text">{theme.name}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Text Section */}
-                                <div className="pt-4 border-t border-slate-200">
-                                    <h3 className="font-bold text-text mb-4 flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-accent"></div>
-                                        Text
-                                    </h3>
-
-                                    <div className="space-y-4">
+                                {activeTab === 'text' && (
+                                    <div className="space-y-6">
                                         <div>
                                             <label className="block text-sm font-medium text-text mb-2">Tagline</label>
                                             <input
                                                 type="text"
                                                 value={profileData.tagline}
                                                 onChange={(e) => setProfileData({ ...profileData, tagline: e.target.value })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                                                 placeholder="Professional Notary Services"
                                             />
+                                            <p className="text-xs text-text-secondary mt-1">Appears below your name on your profile</p>
                                         </div>
 
                                         <div>
@@ -218,23 +235,24 @@ export default function CustomizeProfile() {
                                             <select
                                                 value={customization.headingFont}
                                                 onChange={(e) => setCustomization({ ...customization, headingFont: e.target.value })}
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+                                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                                             >
                                                 <option value="serif">Serif (Classic)</option>
                                                 <option value="sans">Sans-serif (Modern)</option>
                                                 <option value="mono">Monospace (Tech)</option>
                                             </select>
+                                            <p className="text-xs text-text-secondary mt-1">Font style for your name and headings</p>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Side - Live Preview */}
+                    {/* Right Side - Scrollable Live Preview */}
                     <div className="lg:col-span-9">
                         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-                            <div className="bg-slate-100 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+                            <div className="bg-slate-100 px-4 py-3 border-b border-slate-200 flex items-center justify-between sticky top-24 z-10">
                                 <p className="text-sm font-medium text-text-secondary">Live Preview</p>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -242,8 +260,8 @@ export default function CustomizeProfile() {
                                 </div>
                             </div>
 
-                            {/* Preview Content */}
-                            <div className="p-8 min-h-[800px]" style={{ backgroundColor: customization.backgroundColor }}>
+                            {/* Preview Content - Scrollable */}
+                            <div className="p-8" style={{ backgroundColor: customization.backgroundColor }}>
                                 {/* Hero Section */}
                                 <div className="text-center mb-12 pb-8 border-b" style={{ borderColor: `${customization.primaryColor}20` }}>
                                     <h1
