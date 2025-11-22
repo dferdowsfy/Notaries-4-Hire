@@ -95,12 +95,21 @@ export default function Dashboard() {
                 </div>
 
                 {/* Profile Actions */}
-                <div className="bg-white dark:bg-surface border border-slate-200 dark:border-slate-700 rounded-xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div>
-                        <h3 className="font-bold text-lg text-text mb-1">Your Public Profile</h3>
-                        <p className="text-sm text-text-secondary">Share your profile with potential clients</p>
+                <div className="bg-white dark:bg-surface border border-slate-200 dark:border-slate-700 rounded-xl p-6 mb-8">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+                        <div>
+                            <h3 className="font-bold text-lg text-text mb-1">Your Public Profile</h3>
+                            <p className="text-sm text-text-secondary">Share your profile with potential clients</p>
+                        </div>
+                        <Link
+                            to="/customize-profile"
+                            className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors shadow-sm"
+                        >
+                            <Settings className="w-4 h-4" />
+                            Customize Page
+                        </Link>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex flex-wrap gap-3">
                         <Link
                             to="/profile"
                             className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 text-text font-medium rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"

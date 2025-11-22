@@ -51,20 +51,27 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         setResetSuccess(false);
 
         try {
-            await sendPasswordResetEmail(auth, resetEmail);
+            await sendPasswordResetEmail(auth, resetEmail, {
+                url: window.location.origin,
+                handleCodeInApp: false
+            });
             setResetSuccess(true);
             setResetEmail('');
+            // Keep success message visible longer
             setTimeout(() => {
                 setShowForgotPassword(false);
                 setResetSuccess(false);
-            }, 3000);
+            }, 5000);
         } catch (err: any) {
+            console.error('Password reset error:', err);
             if (err.code === 'auth/user-not-found') {
                 setError('No account found with this email address.');
             } else if (err.code === 'auth/invalid-email') {
                 setError('Please enter a valid email address.');
+            } else if (err.code === 'auth/too-many-requests') {
+                setError('Too many requests. Please try again later.');
             } else {
-                setError('Failed to send reset email. Please try again.');
+                setError(`Failed to send reset email: ${err.message || 'Please check your Firebase email configuration.'}`);
             }
         } finally {
             setResetLoading(false);
