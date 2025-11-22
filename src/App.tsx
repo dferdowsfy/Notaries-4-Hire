@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ModalProvider } from './context/ModalContext';
@@ -9,6 +9,7 @@ import Search from './pages/Search';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import CustomizeProfile from './pages/CustomizeProfile';
+import ResetPassword from './pages/ResetPassword';
 
 function Footer() {
     return (
@@ -20,28 +21,48 @@ function Footer() {
     );
 }
 
+function AppContent() {
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    // Intercept Firebase action URL parameters
+    useEffect(() => {
+        const mode = searchParams.get('mode');
+        const oobCode = searchParams.get('oobCode');
+
+        if (mode === 'resetPassword' && oobCode) {
+            navigate(`/reset-password?oobCode=${oobCode}`);
+        }
+    }, [searchParams, navigate]);
+
+    return (
+        <div className="min-h-screen bg-white dark:bg-background text-text font-sans flex flex-col transition-colors duration-300">
+            <Navbar />
+            <main className="flex-grow">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/search" element={<Search />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/customize-profile" element={<CustomizeProfile />} />
+                    <Route path="/profile/:userId" element={<Profile />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    {/* Fallback route for demo purposes */}
+                    <Route path="*" element={<Home />} />
+                </Routes>
+            </main>
+            <Footer />
+        </div>
+    );
+}
+
 export default function App() {
     return (
         <AuthProvider>
             <ThemeProvider>
                 <ModalProvider>
                     <Router>
-                        <div className="min-h-screen bg-white dark:bg-background text-text font-sans flex flex-col transition-colors duration-300">
-                            <Navbar />
-                            <main className="flex-grow">
-                                <Routes>
-                                    <Route path="/" element={<Home />} />
-                                    <Route path="/search" element={<Search />} />
-                                    <Route path="/dashboard" element={<Dashboard />} />
-                                    <Route path="/customize-profile" element={<CustomizeProfile />} />
-                                    <Route path="/profile/:userId" element={<Profile />} />
-                                    <Route path="/profile" element={<Profile />} />
-                                    {/* Fallback route for demo purposes */}
-                                    <Route path="*" element={<Home />} />
-                                </Routes>
-                            </main>
-                            <Footer />
-                        </div>
+                        <AppContent />
                     </Router>
                 </ModalProvider>
             </ThemeProvider>
