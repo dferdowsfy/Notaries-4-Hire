@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Notary } from '../types';
 import { Star, MapPin, CheckCircle } from 'lucide-react';

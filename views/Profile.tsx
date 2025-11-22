@@ -9,7 +9,7 @@ interface ProfileProps {
   setView: (view: ViewState) => void;
 }
 
-// Mock reviews since we don't have a reviews collection backend logic fully set up in this snippet
+// Mock reviews for display purposes until real reviews are collected
 const MOCK_REVIEWS = [
   { id: 1, author: "Alice M.", rating: 5, text: "Excellent service! Very professional and punctual.", date: "2 days ago" },
   { id: 2, author: "Bob R.", rating: 4, text: "Great experience, handled my documents quickly.", date: "1 week ago" },
@@ -17,7 +17,10 @@ const MOCK_REVIEWS = [
 ];
 
 const Profile: React.FC<ProfileProps> = ({ user, currentUser, setView }) => {
-  const [reviews, setReviews] = useState(MOCK_REVIEWS);
+  // If the user has 0 reviews, show empty state instead of mocks
+  const initialReviews = (user.reviewCount && user.reviewCount > 0) ? MOCK_REVIEWS : [];
+  
+  const [reviews, setReviews] = useState(initialReviews);
   const [newReview, setNewReview] = useState({ rating: 5, text: '' });
   const [showReviewForm, setShowReviewForm] = useState(false);
 
@@ -41,12 +44,10 @@ const Profile: React.FC<ProfileProps> = ({ user, currentUser, setView }) => {
   };
 
   const handleBookNow = () => {
-    // In a real app, this would open a booking modal or navigate to a booking flow
     alert(`Starting booking process for ${user.displayName}`);
   };
 
   const handleContact = () => {
-    // In a real app, this would open a contact form or show contact details
     alert(`Contacting ${user.displayName}...`);
   };
 
@@ -66,17 +67,20 @@ const Profile: React.FC<ProfileProps> = ({ user, currentUser, setView }) => {
       {/* Hero Section */}
       <div className="bg-surface/50 border-b border-border py-16">
         <div className="container mx-auto px-4 text-center">
-          <div className="w-32 h-32 mx-auto rounded-full bg-primary/10 border-4 border-surface shadow-xl mb-6 flex items-center justify-center text-4xl">
+          <div className="w-32 h-32 mx-auto rounded-full bg-primary/10 border-4 border-surface shadow-xl mb-6 flex items-center justify-center text-4xl text-primary font-bold overflow-hidden">
             {user.photoURL ? (
-              <img src={user.photoURL} alt={user.displayName || ''} className="w-full h-full rounded-full object-cover" />
+              <img src={user.photoURL} alt={user.displayName || ''} className="w-full h-full object-cover" />
             ) : (
-              <span>{user.displayName?.charAt(0)}</span>
+              <span>{user.displayName?.charAt(0).toUpperCase()}</span>
             )}
           </div>
           <h1 className="text-4xl font-serif font-bold text-text mb-2">{user.displayName}</h1>
           <div className="flex items-center justify-center gap-4 text-text-secondary mb-6">
             <span className="flex items-center gap-1"><MapPin size={16} /> {user.location || 'Location not set'}</span>
-            <span className="flex items-center gap-1"><Star size={16} className="text-yellow-500 fill-current" /> 4.8 (24 reviews)</span>
+            <span className="flex items-center gap-1">
+              <Star size={16} className="text-yellow-500 fill-current" /> 
+              {user.rating ? user.rating.toFixed(1) : '0.0'} ({user.reviewCount || 0} reviews)
+            </span>
           </div>
           <div className="flex justify-center gap-3">
             <button 
@@ -199,23 +203,29 @@ const Profile: React.FC<ProfileProps> = ({ user, currentUser, setView }) => {
             )}
 
             <div className="space-y-6">
-              {reviews.map(review => (
-                <div key={review.id} className="border-b border-border last:border-0 pb-6 last:pb-0">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
-                        {review.author.charAt(0)}
+              {reviews.length > 0 ? (
+                reviews.map(review => (
+                  <div key={review.id} className="border-b border-border last:border-0 pb-6 last:pb-0">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
+                          {review.author.charAt(0)}
+                        </div>
+                        <span className="font-medium text-text">{review.author}</span>
                       </div>
-                      <span className="font-medium text-text">{review.author}</span>
+                      <span className="text-xs text-text-secondary">{review.date}</span>
                     </div>
-                    <span className="text-xs text-text-secondary">{review.date}</span>
+                    <div className="flex text-yellow-500 text-sm mb-2">
+                      {[...Array(review.rating)].map((_, i) => <span key={i}>★</span>)}
+                    </div>
+                    <p className="text-text-secondary text-sm leading-relaxed">{review.text}</p>
                   </div>
-                  <div className="flex text-yellow-500 text-sm mb-2">
-                    {[...Array(review.rating)].map((_, i) => <span key={i}>★</span>)}
-                  </div>
-                  <p className="text-text-secondary text-sm leading-relaxed">{review.text}</p>
+                ))
+              ) : (
+                <div className="text-center py-8 text-text-secondary">
+                  <p>No reviews yet.</p>
                 </div>
-              ))}
+              )}
             </div>
           </section>
         </div>

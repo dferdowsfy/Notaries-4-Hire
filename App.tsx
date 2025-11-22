@@ -25,8 +25,8 @@ const App: React.FC = () => {
   const [currentView, setView] = useState<ViewState>('home');
   const [user, setUser] = useState<User | null>(null);
   
-  // Theme State
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  // Theme State - DEFAULT TO LIGHT
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   
   // Modal State
   const [loginOpen, setLoginOpen] = useState(false);
@@ -46,14 +46,37 @@ const App: React.FC = () => {
     phone: '',
     commissionNumber: '',
     experience: 'Less than 1 year',
-    services: [] as string[]
+    services: [] as string[],
+    referredBy: ''
   });
 
+  // Apply Theme Effect
   useEffect(() => {
+    const html = document.documentElement;
+    if (theme === 'dark') {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    // Check for referral code in URL
+    const params = new URLSearchParams(window.location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      setRegData(prev => ({ ...prev, referredBy: refCode }));
+      sessionStorage.setItem('notaries4hire_ref', refCode);
+    } else {
+      const storedRef = sessionStorage.getItem('notaries4hire_ref');
+      if (storedRef) {
+        setRegData(prev => ({ ...prev, referredBy: storedRef }));
+      }
+    }
+
     // Auth state observer
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser) {
-        // Fetch additional user data from Firestore
         const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
         const userData = userDoc.exists() ? userDoc.data() : {};
 
@@ -61,7 +84,7 @@ const App: React.FC = () => {
           uid: firebaseUser.uid,
           email: firebaseUser.email || '',
           displayName: firebaseUser.displayName,
-          role: 'notary', // Default to notary for this demo
+          role: 'notary',
           ...userData
         });
       } else {
@@ -77,13 +100,7 @@ const App: React.FC = () => {
   };
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
   // Handle Input Changes
@@ -111,7 +128,7 @@ const App: React.FC = () => {
       await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
       setLoginOpen(false);
       setLoginData({ email: '', password: '' });
-      setView('dashboard'); // Redirect to dashboard on login
+      setView('dashboard'); 
     } catch (error: any) {
       alert('Login Failed: ' + error.message);
     }
@@ -119,16 +136,13 @@ const App: React.FC = () => {
 
   const handleRegister = async () => {
     try {
-      // 1. Create User in Auth
       const userCredential = await createUserWithEmailAndPassword(auth, regData.email, regData.password);
       const firebaseUser = userCredential.user;
 
-      // 2. Update Profile Display Name
       await updateProfile(firebaseUser, {
         displayName: regData.fullName
       });
 
-      // 3. Save Extended Profile to Firestore
       const userData = {
         uid: firebaseUser.uid,
         email: regData.email,
@@ -141,23 +155,26 @@ const App: React.FC = () => {
         yearsExperience: regData.experience,
         specialties: regData.services,
         createdAt: new Date().toISOString(),
-        bio: `Professional notary serving ${regData.city}, ${regData.state}.`
+        bio: `Professional notary serving ${regData.city}, ${regData.state}.`,
+        rating: 0,
+        reviewCount: 0,
+        completedCount: 0,
+        profileViews: 0,
+        referredBy: regData.referredBy || null
       };
 
       await setDoc(doc(db, "users", firebaseUser.uid), userData);
 
-      // Update local state immediately
       setUser(userData as User);
-
       setRegisterOpen(false);
       setRegStep(1);
-      // Reset form
+      
       setRegData({
         fullName: '', email: '', password: '', city: '', state: '',
-        phone: '', commissionNumber: '', experience: 'Less than 1 year', services: []
+        phone: '', commissionNumber: '', experience: 'Less than 1 year', services: [], referredBy: ''
       });
       
-      setView('dashboard'); // Redirect to dashboard on register
+      setView('dashboard');
 
     } catch (error: any) {
       alert('Registration Failed: ' + error.message);
@@ -172,11 +189,10 @@ const App: React.FC = () => {
       case 'landing-customizer': return user ? <LandingCustomizer user={user} setView={setView} /> : <Home setView={setView} onRegister={() => setRegisterOpen(true)} />;
       case 'profile': return user ? <Profile user={user} currentUser={user} setView={setView} /> : <Home setView={setView} onRegister={() => setRegisterOpen(true)} />;
       case 'register': 
-        // If register view is requested, open modal and show home
         setTimeout(() => {
             setView('home');
             setRegisterOpen(true);
-            setRegStep(1); // Reset to step 1
+            setRegStep(1); 
         }, 0);
         return <Home setView={setView} onRegister={() => setRegisterOpen(true)} />;
       default: return <Home setView={setView} onRegister={() => setRegisterOpen(true)} />;
@@ -220,6 +236,7 @@ const App: React.FC = () => {
                 onChange={handleRegChange}
                 className="w-full bg-background border border-border rounded-lg px-3 py-2 text-text focus:border-primary outline-none" 
                 placeholder="••••••••" 
+                required
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -248,6 +265,17 @@ const App: React.FC = () => {
                   ))}
                 </select>
               </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-text-secondary mb-1">Referral Code (Optional)</label>
+              <input 
+                type="text" 
+                name="referredBy"
+                value={regData.referredBy}
+                onChange={handleRegChange}
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-text focus:border-primary outline-none" 
+                placeholder="e.g., USER_123" 
+              />
             </div>
           </div>
         );
@@ -333,7 +361,6 @@ const App: React.FC = () => {
         {renderView()}
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-border bg-surface/50 py-12 mt-auto">
         <div className="container mx-auto px-4 text-center">
           <h4 className="text-xl font-serif mb-4 text-text">Notaries4Hire</h4>
@@ -344,7 +371,7 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* Auth Modals */}
+      {/* Login Modal */}
       <Modal isOpen={loginOpen} onClose={() => setLoginOpen(false)} title="Welcome Back">
         <form onSubmit={handleLogin}>
           <div className="space-y-4">
@@ -377,13 +404,12 @@ const App: React.FC = () => {
         </form>
       </Modal>
 
+      {/* Register Modal */}
       <Modal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} title="Get Listed as a Notary">
          <div className="mb-8">
-           {/* Flex-based Stepper with Arrows */}
            <div className="flex items-center justify-between w-full">
              {[1, 2, 3].map((step, index) => (
                <React.Fragment key={step}>
-                 {/* Connector Arrow */}
                  {index > 0 && (
                    <div className="flex-auto flex items-center justify-center text-text-secondary mx-2">
                       <div className={`h-[2px] w-full transition-colors duration-300 ${step <= regStep ? 'bg-primary' : 'bg-border'}`} />
@@ -391,8 +417,6 @@ const App: React.FC = () => {
                       <div className={`h-[2px] w-full transition-colors duration-300 ${step <= regStep ? 'bg-primary' : 'bg-border'}`} />
                    </div>
                  )}
-                 
-                 {/* Step Circle */}
                  <div className="flex flex-col items-center relative z-10">
                    <div 
                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300 border-2

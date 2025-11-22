@@ -1,7 +1,8 @@
-import React from 'react';
-import { SAMPLE_NOTARIES } from '../services/dataService';
+
+import React, { useEffect, useState } from 'react';
+import { getNotaries } from '../services/dataService';
+import { Notary, ViewState } from '../types';
 import NotaryCard from '../components/NotaryCard';
-import { ViewState } from '../types';
 import { Search, Shield, ShieldCheck, Car, Headset, CheckCircle, MessageCircle, Calendar, User, Star, BarChart, Globe, Home as HomeIcon, Fingerprint, Heart, Plane } from 'lucide-react';
 
 interface HomeProps {
@@ -19,7 +20,16 @@ const CATEGORIES = [
 ];
 
 const Home: React.FC<HomeProps> = ({ setView, onRegister }) => {
-  const featuredNotaries = SAMPLE_NOTARIES.filter(n => n.featured);
+  const [featuredNotaries, setFeaturedNotaries] = useState<Notary[]>([]);
+
+  useEffect(() => {
+    const loadFeatured = async () => {
+      const allNotaries = await getNotaries();
+      // In a real app, you'd query for featured=true. For now, take first 4.
+      setFeaturedNotaries(allNotaries.slice(0, 4));
+    };
+    loadFeatured();
+  }, []);
 
   return (
     <div className="flex flex-col w-full">
@@ -117,9 +127,13 @@ const Home: React.FC<HomeProps> = ({ setView, onRegister }) => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredNotaries.map(notary => (
+            {featuredNotaries.length > 0 ? featuredNotaries.map(notary => (
               <NotaryCard key={notary.id} notary={notary} onClick={() => {}} />
-            ))}
+            )) : (
+              <div className="col-span-4 text-center text-text-secondary py-12">
+                No featured notaries found. Be the first to list!
+              </div>
+            )}
           </div>
         </div>
       </section>

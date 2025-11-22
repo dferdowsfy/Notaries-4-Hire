@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { User, ViewState } from '../types';
-import { BarChart, Star, Briefcase, Settings, User as UserIcon, Calendar } from 'lucide-react';
+import { BarChart, Star, Briefcase, Settings, User as UserIcon, Calendar, DollarSign, Copy, Check } from 'lucide-react';
 
 interface DashboardProps {
   user: User;
@@ -8,11 +8,39 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user, setView }) => {
+  const [copied, setCopied] = useState(false);
+
+  // Use real data or fallback to 0 for new users
   const stats = [
-    { label: 'Avg Rating', value: '4.8', icon: Star, color: 'text-yellow-500', sub: 'Based on 24 reviews' },
-    { label: 'Completed', value: '156', icon: Briefcase, color: 'text-purple-500', sub: 'Total transactions' },
-    { label: 'Views', value: '1.2k', icon: UserIcon, color: 'text-blue-500', sub: 'Profile views this month' },
+    { 
+      label: 'Avg Rating', 
+      value: user.rating ? user.rating.toFixed(1) : '0.0', 
+      icon: Star, 
+      color: 'text-yellow-500', 
+      sub: `Based on ${user.reviewCount || 0} reviews` 
+    },
+    { 
+      label: 'Completed', 
+      value: (user.completedCount || 0).toString(), 
+      icon: Briefcase, 
+      color: 'text-purple-500', 
+      sub: 'Total transactions' 
+    },
+    { 
+      label: 'Views', 
+      value: (user.profileViews || 0).toString(), 
+      icon: UserIcon, 
+      color: 'text-blue-500', 
+      sub: 'Profile views this month' 
+    },
   ];
+
+  const handleCopyLink = () => {
+    const link = `${window.location.origin}/?ref=${user.uid}`;
+    navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="container mx-auto px-4 py-12 min-h-screen">
@@ -40,6 +68,26 @@ const Dashboard: React.FC<DashboardProps> = ({ user, setView }) => {
       <h2 className="text-xl font-serif mb-6 text-text">Quick Actions</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
+        {/* Share & Earn (Affiliate) Card - FIRST CARD */}
+        <div className="glass-panel p-6 rounded-xl border-2 border-primary/20 hover:border-primary/50 transition-colors bg-surface">
+          <div className="mb-4 p-2 w-fit bg-green-500/10 text-green-500 rounded-lg"><DollarSign size={20} /></div>
+          <h3 className="text-lg font-medium mb-2 text-text">Share & Earn</h3>
+          <p className="text-sm text-text-secondary mb-4">Refer notaries and earn commissions.</p>
+          
+          <div className="bg-background border border-border rounded-lg p-2 flex items-center justify-between gap-2">
+            <span className="text-xs text-text-secondary truncate font-mono flex-1 p-1 bg-surface/50 rounded select-all">
+              {`${window.location.origin}/?ref=${user.uid}`}
+            </span>
+            <button 
+              onClick={handleCopyLink}
+              className="p-2 rounded-md bg-primary text-background hover:bg-primary-hover transition-colors shrink-0 font-medium text-xs"
+              title="Copy Link"
+            >
+              {copied ? "Copied!" : "Copy Link"}
+            </button>
+          </div>
+        </div>
+
         {/* Profile Card */}
         <div className="glass-panel p-6 rounded-xl border border-border hover:border-primary/30 transition-colors">
           <div className="flex justify-between items-start mb-4">

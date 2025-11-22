@@ -1,3 +1,4 @@
+
 export interface Notary {
   id: string;
   name: string;
@@ -25,13 +26,21 @@ export interface User {
   photoURL?: string;
   location?: string;
   phone?: string;
+  
+  // Extended profile fields
+  rating?: number;
+  reviewCount?: number;
+  completedCount?: number;
+  profileViews?: number;
+  commissionNumber?: string;
+  referredBy?: string; // For affiliate tracking
 }
 
 export type ViewState = 'home' | 'directory' | 'dashboard' | 'profile' | 'login' | 'register' | 'landing-customizer';
 
 export interface Category {
   name: string;
-  icon: string;
+  icon: any;
   description: string;
   count: number;
 }

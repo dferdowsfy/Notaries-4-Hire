@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { getNotaries } from '../services/dataService';
 import { Notary } from '../types';
@@ -12,7 +13,7 @@ const Directory: React.FC = () => {
   useEffect(() => {
     const fetchNotaries = async () => {
       const data = await getNotaries();
-      setNotaries(data); // In real app, this would filter based on query
+      setNotaries(data);
       setLoading(false);
     };
     fetchNotaries();
@@ -87,10 +88,11 @@ const Directory: React.FC = () => {
               {notaries.map(notary => (
                 <NotaryCard key={notary.id} notary={notary} onClick={() => {}} />
               ))}
-              {/* Duplicate for visual fill in demo */}
-              {notaries.map(notary => (
-                <NotaryCard key={`dup-${notary.id}`} notary={notary} onClick={() => {}} />
-              ))}
+              {notaries.length === 0 && (
+                <div className="col-span-3 text-center py-12 text-text-secondary">
+                  No notaries found. Be the first to list!
+                </div>
+              )}
             </div>
           )}
         </div>
