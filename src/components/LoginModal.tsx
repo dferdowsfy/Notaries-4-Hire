@@ -51,10 +51,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         setResetSuccess(false);
 
         try {
-            await sendPasswordResetEmail(auth, resetEmail, {
-                url: window.location.origin,
-                handleCodeInApp: false
-            });
+            // Removed custom URL redirect to avoid 'unauthorized-continue-uri' errors
+            // This will use the default Firebase password reset flow which is more robust
+            await sendPasswordResetEmail(auth, resetEmail);
+
             setResetSuccess(true);
             setResetEmail('');
             // Keep success message visible longer
