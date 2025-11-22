@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Check } from 'lucide-react';
 import { US_STATES } from '../data/states';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -22,6 +22,14 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    // Reset step when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setStep(1);
+            setError('');
+        }
+    }, [isOpen]);
 
     // Form State
     const [formData, setFormData] = useState({
