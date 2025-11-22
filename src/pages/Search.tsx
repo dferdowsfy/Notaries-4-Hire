@@ -1,36 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Search as SearchIcon, MapPin, Star } from 'lucide-react';
-
-// Mock data for search results
-const MOCK_NOTARIES = [
-    { id: 1, name: 'Jane Doe', city: 'San Francisco', state: 'CA', rating: 4.9, services: ['Mobile Notary', 'Loan Signing'] },
-    { id: 2, name: 'John Smith', city: 'Austin', state: 'TX', rating: 5.0, services: ['Remote Online', 'Apostille'] },
-    { id: 3, name: 'Sarah Wilson', city: 'New York', state: 'NY', rating: 4.8, services: ['Mobile Notary', 'Wedding Officiant'] },
-    { id: 4, name: 'Michael Brown', city: 'Chicago', state: 'IL', rating: 4.9, services: ['Loan Signing', 'Fingerprinting'] },
-    { id: 5, name: 'Emily Davis', city: 'Miami', state: 'FL', rating: 5.0, services: ['Mobile Notary', 'Apostille'] },
-];
+import { collection, getDocs, query } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 export default function Search() {
     const [searchParams] = useSearchParams();
-    const query = searchParams.get('q') || '';
-    const [results, setResults] = useState(MOCK_NOTARIES);
-    const [searchTerm, setSearchTerm] = useState(query);
+    const queryParam = searchParams.get('q') || '';
+    const [results, setResults] = useState<any[]>([]);
+    const [allNotaries, setAllNotaries] = useState<any[]>([]);
+    const [searchTerm, setSearchTerm] = useState(queryParam);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    // Fetch all notaries from Firebase
     useEffect(() => {
-        if (query) {
-            const filtered = MOCK_NOTARIES.filter(n =>
-                n.city.toLowerCase().includes(query.toLowerCase()) ||
-                n.state.toLowerCase().includes(query.toLowerCase()) ||
-                n.name.toLowerCase().includes(query.toLowerCase())
+        const fetchNotaries = async () => {
+            setLoading(true);
+            try {
+                const q = query(collection(db, 'notaries'));
+                const querySnapshot = await getDocs(q);
+                const notaries = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                setAllNotaries(notaries);
+                setResults(notaries);
+            } catch (error) {
+                console.error('Error fetching notaries:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchNotaries();
+    }, []);
+
+    // Filter results based on search query
+    useEffect(() => {
+        if (queryParam) {
+            const filtered = allNotaries.filter(n =>
+                n.city?.toLowerCase().includes(queryParam.toLowerCase()) ||
+                n.state?.toLowerCase().includes(queryParam.toLowerCase()) ||
+                n.fullName?.toLowerCase().includes(queryParam.toLowerCase()) ||
+                n.services?.some((s: string) => s.toLowerCase().includes(queryParam.toLowerCase()))
             );
             setResults(filtered);
         } else {
-            setResults(MOCK_NOTARIES);
+            setResults(allNotaries);
         }
-        setSearchTerm(query);
-    }, [query]);
+        setSearchTerm(queryParam);
+    }, [queryParam, allNotaries]);
 
     const handleSearch = () => {
         navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
@@ -69,46 +89,68 @@ export default function Search() {
                 </div>
 
                 {/* Results */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {results.length > 0 ? (
-                        results.map((notary) => (
+                {loading ? (
+                    <div className="text-center py-12 text-text-secondary">Loading notaries...</div>
+                ) : results.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {results.map((notary) => (
                             <div key={notary.id} className="bg-white rounded-xl border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
-                                <div className="h-32 bg-slate-100 relative">
-                                    {/* Cover placeholder */}
+                                <div className="h-32 bg-gradient-to-br from-primary/10 to-accent/10 relative flex items-center justify-center">
+                                    {notary.photoUrl ? (
+                                        <img src={notary.photoUrl} alt={notary.fullName} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="text-4xl font-serif text-primary/30">
+                                            {notary.fullName?.charAt(0) || '?'}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="p-6">
                                     <div className="flex justify-between items-start mb-2">
-                                        <h3 className="font-bold text-lg text-text">{notary.name}</h3>
+                                        <h3 className="font-bold text-lg text-text">{notary.fullName || 'Notary Professional'}</h3>
                                         <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded text-xs font-bold text-text">
-                                            <Star className="w-3 h-3 text-accent fill-accent" /> {notary.rating}
+                                            <Star className="w-3 h-3 text-accent fill-accent" /> {notary.rating || 5.0}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-1 text-sm text-text-secondary mb-4">
                                         <MapPin className="w-4 h-4" />
-                                        {notary.city}, {notary.state}
+                                        {notary.city && notary.state ? `${notary.city}, ${notary.state}` : 'Location not set'}
                                     </div>
-                                    <div className="flex flex-wrap gap-2 mb-6">
-                                        {notary.services.map((s, i) => (
-                                            <span key={i} className="px-2 py-1 bg-primary/5 text-primary text-xs rounded font-medium">
-                                                {s}
-                                            </span>
-                                        ))}
-                                    </div>
+                                    {notary.services && notary.services.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mb-6">
+                                            {notary.services.slice(0, 2).map((s: string, i: number) => (
+                                                <span key={i} className="px-2 py-1 bg-primary/5 text-primary text-xs rounded font-medium">
+                                                    {s}
+                                                </span>
+                                            ))}
+                                            {notary.services.length > 2 && (
+                                                <span className="px-2 py-1 bg-slate-100 text-text-secondary text-xs rounded font-medium">
+                                                    +{notary.services.length - 2}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
                                     <Link
-                                        to="/profile"
+                                        to={`/profile/${notary.id}`}
                                         className="block w-full py-2 border border-primary text-primary font-medium rounded-lg hover:bg-primary hover:text-white transition-colors text-center"
                                     >
                                         View Profile
                                     </Link>
                                 </div>
                             </div>
-                        ))
-                    ) : (
-                        <div className="col-span-full text-center py-12 text-text-secondary">
-                            No notaries found matching "{query}". Try a different search term.
-                        </div>
-                    )}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="col-span-full text-center py-12 text-text-secondary">
+                        {queryParam ? (
+                            <>
+                                <p className="mb-4">No notaries found matching "{queryParam}".</p>
+                                <p>Try a different search term.</p>
+                            </>
+                        ) : (
+                            <p>No notaries are currently listed. Be the first to get listed!</p>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

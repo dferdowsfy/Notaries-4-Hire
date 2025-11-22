@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Car, Globe, Home as HomeIcon, Fingerprint, Heart, Plane, ShieldCheck, Shield, Headphones, Star } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useModal } from '../context/ModalContext';
+import { collection, getDocs, query, limit, orderBy } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const services = [
     { icon: Car, label: 'Mobile Notary', count: '2103+ pros' },
@@ -15,7 +17,33 @@ const services = [
 export default function Home() {
     const { openGetListed } = useModal();
     const [searchTerm, setSearchTerm] = useState('');
+    const [featuredNotaries, setFeaturedNotaries] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchFeaturedNotaries = async () => {
+            try {
+                const q = query(
+                    collection(db, 'notaries'),
+                    orderBy('createdAt', 'desc'),
+                    limit(3)
+                );
+                const querySnapshot = await getDocs(q);
+                const notaries = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                setFeaturedNotaries(notaries);
+            } catch (error) {
+                console.error('Error fetching notaries:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFeaturedNotaries();
+    }, []);
 
     const handleSearch = () => {
         if (searchTerm.trim()) {
@@ -124,34 +152,68 @@ export default function Home() {
                     </Link>
                 </div>
 
-                {/* Placeholder for cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="bg-white rounded-xl border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
-                            <div className="h-48 bg-slate-100 relative">
-                                {/* Cover image placeholder */}
-                            </div>
-                            <div className="p-6">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <h3 className="font-bold text-lg text-text">Jane Doe</h3>
-                                        <p className="text-sm text-text-secondary">Mobile Notary • San Francisco, CA</p>
-                                    </div>
-                                    <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded text-xs font-bold text-text">
-                                        <Star className="w-3 h-3 text-accent fill-accent" /> 4.9
-                                    </div>
+                {loading ? (
+                    <div className="text-center py-12 text-text-secondary">Loading featured notaries...</div>
+                ) : featuredNotaries.length === 0 ? (
+                    <div className="text-center py-12">
+                        <p className="text-text-secondary mb-4">No notaries listed yet.</p>
+                        <button
+                            onClick={openGetListed}
+                            className="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                        >
+                            Be the First to Get Listed!
+                        </button>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {featuredNotaries.map((notary) => (
+                            <div key={notary.id} className="bg-white rounded-xl border border-slate-100 overflow-hidden hover:shadow-lg transition-shadow">
+                                <div className="h-48 bg-gradient-to-br from-primary/10 to-accent/10 relative flex items-center justify-center">
+                                    {notary.photoUrl ? (
+                                        <img src={notary.photoUrl} alt={notary.fullName} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="text-6xl font-serif text-primary/30">
+                                            {notary.fullName?.charAt(0) || '?'}
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="flex gap-2 mb-6">
-                                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded font-medium">Loan Signing</span>
-                                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded font-medium">Apostille</span>
+                                <div className="p-6">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 className="font-bold text-lg text-text">{notary.fullName || 'Notary Professional'}</h3>
+                                            <p className="text-sm text-text-secondary">
+                                                {notary.city && notary.state ? `${notary.city}, ${notary.state}` : 'Location not set'}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded text-xs font-bold text-text">
+                                            <Star className="w-3 h-3 text-accent fill-accent" /> {notary.rating || 5.0}
+                                        </div>
+                                    </div>
+                                    {notary.services && notary.services.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mb-6">
+                                            {notary.services.slice(0, 2).map((service: string, i: number) => (
+                                                <span key={i} className="px-2 py-1 bg-primary/10 text-primary text-xs rounded font-medium">
+                                                    {service}
+                                                </span>
+                                            ))}
+                                            {notary.services.length > 2 && (
+                                                <span className="px-2 py-1 bg-slate-100 text-text-secondary text-xs rounded font-medium">
+                                                    +{notary.services.length - 2} more
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
+                                    <Link
+                                        to={`/profile/${notary.id}`}
+                                        className="block w-full py-2 border border-primary text-primary font-medium rounded-lg hover:bg-primary hover:text-white transition-colors text-center"
+                                    >
+                                        View Profile
+                                    </Link>
                                 </div>
-                                <Link to="/profile" className="block w-full py-2 border border-primary text-primary font-medium rounded-lg hover:bg-primary hover:text-white transition-colors text-center">
-                                    View Profile
-                                </Link>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </section>
         </div>
     );
