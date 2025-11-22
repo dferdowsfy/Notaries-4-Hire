@@ -148,7 +148,7 @@ export default function Home() {
                         Join thousands of notaries growing their business with Notaries4Hire. No hidden fees, cancel anytime.
                     </p>
 
-                    <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden max-w-md mx-auto relative">
+                    <div className="bg-white rounded-2xl shadow-xl border-2 border-accent overflow-hidden max-w-md mx-auto relative">
                         <div className="absolute top-0 left-0 w-full h-2 bg-accent"></div>
                         <div className="p-8">
                             <h3 className="text-xl font-bold text-text mb-2">Professional Plan</h3>
