@@ -100,25 +100,25 @@ export default function Home() {
             <section className="py-12 border-y border-slate-50 bg-slate-50/50">
                 <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center text-primary shadow-sm">
+                        <div className="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center text-accent shadow-sm">
                             <ShieldCheck className="w-6 h-6" />
                         </div>
                         <span className="text-sm font-bold text-text-secondary tracking-wide uppercase">Verified Professionals</span>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center text-primary shadow-sm">
+                        <div className="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center text-accent shadow-sm">
                             <Shield className="w-6 h-6" />
                         </div>
                         <span className="text-sm font-bold text-text-secondary tracking-wide uppercase">Fully Insured</span>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center text-primary shadow-sm">
+                        <div className="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center text-accent shadow-sm">
                             <Car className="w-6 h-6" />
                         </div>
                         <span className="text-sm font-bold text-text-secondary tracking-wide uppercase">Mobile Available</span>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center text-primary shadow-sm">
+                        <div className="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center text-accent shadow-sm">
                             <Headphones className="w-6 h-6" />
                         </div>
                         <span className="text-sm font-bold text-text-secondary tracking-wide uppercase">24/7 Support</span>
@@ -131,8 +131,8 @@ export default function Home() {
                 <h2 className="text-4xl font-serif text-center text-text mb-16">Browse by Service</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                     {services.map((service, index) => (
-                        <div key={index} className="group bg-white border border-slate-100 rounded-xl p-8 flex flex-col items-center text-center hover:shadow-xl hover:border-primary/30 transition-all cursor-pointer">
-                            <service.icon className="w-8 h-8 text-primary mb-4 group-hover:scale-110 transition-transform" />
+                        <div key={index} className="group bg-white border border-slate-100 rounded-xl p-8 flex flex-col items-center text-center hover:shadow-xl hover:border-accent/30 transition-all cursor-pointer">
+                            <service.icon className="w-8 h-8 text-accent mb-4 group-hover:scale-110 transition-transform" />
                             <h3 className="font-bold text-text mb-1">{service.label}</h3>
                             <p className="text-xs text-text-secondary">{service.count}</p>
                         </div>
@@ -140,8 +140,70 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* Pricing Section */}
+            <section className="py-20 bg-slate-50 border-y border-slate-200">
+                <div className="max-w-4xl mx-auto px-6 text-center">
+                    <h2 className="text-4xl font-serif text-text mb-6">Simple, Transparent Pricing</h2>
+                    <p className="text-text-secondary mb-12 max-w-2xl mx-auto">
+                        Join thousands of notaries growing their business with Notaries4Hire. No hidden fees, cancel anytime.
+                    </p>
+
+                    <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden max-w-md mx-auto relative">
+                        <div className="absolute top-0 left-0 w-full h-2 bg-accent"></div>
+                        <div className="p-8">
+                            <h3 className="text-xl font-bold text-text mb-2">Professional Plan</h3>
+                            <div className="flex items-baseline justify-center gap-1 mb-6">
+                                <span className="text-4xl font-bold text-text">$19.99</span>
+                                <span className="text-text-secondary">/month</span>
+                            </div>
+
+                            <ul className="space-y-4 text-left mb-8">
+                                <li className="flex items-center gap-3">
+                                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                        <ShieldCheck className="w-3 h-3 text-green-600" />
+                                    </div>
+                                    <span className="text-text-secondary">Premium Profile Listing</span>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                        <ShieldCheck className="w-3 h-3 text-green-600" />
+                                    </div>
+                                    <span className="text-text-secondary">Unlimited Client Leads</span>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                        <ShieldCheck className="w-3 h-3 text-green-600" />
+                                    </div>
+                                    <span className="text-text-secondary">Customizable Profile Page</span>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                        <ShieldCheck className="w-3 h-3 text-green-600" />
+                                    </div>
+                                    <span className="text-text-secondary">"Verified" Badge</span>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                        <ShieldCheck className="w-3 h-3 text-green-600" />
+                                    </div>
+                                    <span className="text-text-secondary">Priority Search Ranking</span>
+                                </li>
+                            </ul>
+
+                            <button
+                                onClick={openGetListed}
+                                className="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-lg shadow-primary/20"
+                            >
+                                Get Started Now
+                            </button>
+                            <p className="text-xs text-text-secondary mt-4">30-day money-back guarantee</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Featured Notaries */}
-            <section className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-100">
+            <section className="py-20 px-6 max-w-7xl mx-auto">
                 <div className="flex justify-between items-end mb-12">
                     <div>
                         <h2 className="text-4xl font-serif text-text mb-2">Featured Notaries</h2>
