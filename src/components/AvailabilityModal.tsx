@@ -3,6 +3,7 @@ import { X, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
+import TimePicker from './TimePicker';
 
 interface AvailabilityModalProps {
     isOpen: boolean;
@@ -23,7 +24,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 
 const DEFAULT_SCHEDULE: WeeklySchedule = DAYS.reduce((acc, day) => ({
     ...acc,
-    [day]: { active: true, start: '09:00', end: '17:00' }
+    [day]: { active: true, start: '09:00 AM', end: '05:00 PM' }
 }), {});
 
 export default function AvailabilityModal({ isOpen, onClose }: AvailabilityModalProps) {
@@ -114,18 +115,16 @@ export default function AvailabilityModal({ isOpen, onClose }: AvailabilityModal
                                 </div>
 
                                 <div className={`flex items-center gap-2 transition-opacity ${schedule[day]?.active ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
-                                    <input
-                                        type="time"
+                                    <TimePicker
                                         value={schedule[day]?.start}
-                                        onChange={(e) => handleTimeChange(day, 'start', e.target.value)}
-                                        className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-background text-text text-sm focus:border-primary outline-none"
+                                        onChange={(value) => handleTimeChange(day, 'start', value)}
+                                        disabled={!schedule[day]?.active}
                                     />
                                     <span className="text-text-secondary">-</span>
-                                    <input
-                                        type="time"
+                                    <TimePicker
                                         value={schedule[day]?.end}
-                                        onChange={(e) => handleTimeChange(day, 'end', e.target.value)}
-                                        className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-background text-text text-sm focus:border-primary outline-none"
+                                        onChange={(value) => handleTimeChange(day, 'end', value)}
+                                        disabled={!schedule[day]?.active}
                                     />
                                 </div>
                             </div>
