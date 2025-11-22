@@ -37,7 +37,7 @@ export default function Navbar() {
                     <div className="flex items-center gap-3">
                         <Link to="/" className="flex items-center gap-3">
                             {/* Using the full logo image with text included */}
-                            <img src={logoFull} alt="Notaries 4 Hire" className="h-20 w-auto object-contain" />
+                            <img src={logoFull} alt="Notaries 4 Hire" className="h-32 w-auto object-contain" />
                         </Link>
                     </div>
 
