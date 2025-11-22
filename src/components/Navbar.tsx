@@ -45,15 +45,15 @@ export default function Navbar() {
                         </Link>
                     </div>
 
-                    {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center gap-8 text-text-secondary font-medium">
+                    {/* Desktop Menu - Hidden on mobile/tablet (lg and down) */}
+                    <div className="hidden lg:flex items-center gap-8 text-text-secondary font-medium">
                         <Link to="/" className="text-primary hover:text-primary-hover transition-colors">Home</Link>
                         <button onClick={() => scrollToSection('search')} className="hover:text-primary transition-colors">Find Notaries</button>
                         <button onClick={() => scrollToSection('services')} className="hover:text-primary transition-colors">Services</button>
                     </div>
 
-                    {/* Desktop Auth Buttons */}
-                    <div className="hidden md:flex items-center gap-6">
+                    {/* Desktop Auth Buttons - Hidden on mobile/tablet (lg and down) */}
+                    <div className="hidden lg:flex items-center gap-6">
                         {user ? (
                             <div className="flex items-center gap-4">
                                 <Link to="/dashboard" className="font-medium text-text hover:text-primary transition-colors">
@@ -84,9 +84,9 @@ export default function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button */}
+                    {/* Mobile Menu Button - Visible on mobile/tablet (lg and down) */}
                     <button
-                        className="md:hidden text-text p-2"
+                        className="lg:hidden text-text p-2"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     >
                         {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -95,7 +95,7 @@ export default function Navbar() {
 
                 {/* Mobile Menu Dropdown */}
                 {isMobileMenuOpen && (
-                    <div className="md:hidden pt-4 pb-6 border-t border-slate-100 mt-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
+                    <div className="lg:hidden pt-4 pb-6 border-t border-slate-100 mt-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
                         <Link
                             to="/"
                             className="text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
