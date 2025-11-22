@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notaries4Hire</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['"Playfair Display"', 'serif'],
+              sans: ['Roboto', 'sans-serif'],
+            },
+            colors: {
+              background: 'var(--bg-color)',
+              surface: 'var(--surface-color)',
+              primary: {
+                DEFAULT: 'var(--primary-color)', // Turquoise (Light) / Gold (Dark)
+                hover: 'var(--primary-hover)',
+                active: 'var(--primary-active)',
+              },
+              accent: {
+                DEFAULT: 'var(--accent-color)', // Gold (Always)
+              },
+              text: {
+                DEFAULT: 'var(--text-color)', // Navy (Light) / White (Dark)
+                secondary: 'var(--text-secondary)',
+              },
+              border: 'var(--border-color)',
+              teal: {
+                DEFAULT: '#32b8c6',
+              },
+            },
+            boxShadow: {
+              'glow': '0 4px 20px rgba(212, 175, 55, 0.15)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      :root {
+        /* Light Mode Palette */
+        --bg-color: #ffffff;
+        --surface-color: #f8fafc;
+        --primary-color: #40E0D0; /* Turquoise */
+        --primary-hover: #20B2AA;
+        --primary-active: #008B8B;
+        --accent-color: #D4AF37; /* Gold */
+        --text-color: #0B1F3A; /* Navy */
+        --text-secondary: #475569;
+        --border-color: #e2e8f0;
+      }
+
+      .dark {
+        /* Dark Mode Palette */
+        --bg-color: #0a0a0a;
+        --surface-color: #1a1a1a;
+        --primary-color: #d4af37; /* Gold */
+        --primary-hover: #c9a961;
+        --primary-active: #b89a2f;
+        --accent-color: #D4AF37; /* Gold */
+        --text-color: #ffffff;
+        --text-secondary: rgba(245, 245, 245, 0.7);
+        --border-color: rgba(255, 255, 255, 0.15);
+      }
+
+      /* Global base styles */
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: 'Playfair Display', serif;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color);
+      }
+
+      .dark .glass-panel {
+        background: rgba(26, 26, 26, 0.6);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg-color);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-color);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.6.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
