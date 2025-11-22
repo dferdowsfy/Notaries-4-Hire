@@ -95,7 +95,7 @@ export default function Profile() {
             </div>
 
             {/* Profile Content */}
-            <div className="max-w-4xl mx-auto px-6 py-12">
+            <div className="max-w-4xl mx-auto px-6 py-12 pb-24">
                 {/* Hero Section */}
                 <div className="text-center mb-12">
                     {profileData.photoUrl && (
@@ -228,7 +228,7 @@ export default function Profile() {
 
                     {/* Right Column - Availability */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white dark:bg-surface rounded-xl p-6 border border-slate-100 dark:border-slate-800 sticky top-24">
+                        <div className="bg-white dark:bg-surface rounded-xl p-6 border border-slate-100 dark:border-slate-800 sticky top-24 shadow-sm">
                             <h3 className="font-bold text-lg text-text mb-6">Availability</h3>
                             <div className="space-y-3">
                                 {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => {
@@ -254,9 +254,9 @@ export default function Profile() {
                             <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
                                 <h3 className="font-bold text-lg text-text mb-4">Credentials</h3>
                                 <div className="space-y-2 text-sm text-text-secondary">
-                                    <p>• Licensed Notary Public</p>
-                                    <p>• Background Checked</p>
-                                    <p>• Insured & Bonded</p>
+                                    <p className="flex items-center gap-2"><span className="text-green-500">✓</span> Licensed Notary Public</p>
+                                    <p className="flex items-center gap-2"><span className="text-green-500">✓</span> Background Checked</p>
+                                    <p className="flex items-center gap-2"><span className="text-green-500">✓</span> Insured & Bonded</p>
                                 </div>
                             </div>
                         </div>
