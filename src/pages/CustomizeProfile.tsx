@@ -134,8 +134,8 @@ export default function CustomizeProfile() {
                                 <button
                                     onClick={() => setActiveTab('colors')}
                                     className={`flex-1 flex items-center justify-center gap-2 py-3 font-medium transition-colors ${activeTab === 'colors'
-                                            ? 'bg-primary text-white border-b-2 border-primary'
-                                            : 'text-text-secondary hover:bg-slate-50'
+                                        ? 'bg-primary text-white border-b-2 border-primary'
+                                        : 'text-text-secondary hover:bg-slate-50'
                                         }`}
                                 >
                                     <Palette className="w-4 h-4" />
@@ -144,8 +144,8 @@ export default function CustomizeProfile() {
                                 <button
                                     onClick={() => setActiveTab('text')}
                                     className={`flex-1 flex items-center justify-center gap-2 py-3 font-medium transition-colors ${activeTab === 'text'
-                                            ? 'bg-primary text-white border-b-2 border-primary'
-                                            : 'text-text-secondary hover:bg-slate-50'
+                                        ? 'bg-primary text-white border-b-2 border-primary'
+                                        : 'text-text-secondary hover:bg-slate-50'
                                         }`}
                                 >
                                     <Type className="w-4 h-4" />
@@ -252,7 +252,7 @@ export default function CustomizeProfile() {
                     {/* Right Side - Scrollable Live Preview */}
                     <div className="lg:col-span-9">
                         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-                            <div className="bg-slate-100 px-4 py-3 border-b border-slate-200 flex items-center justify-between sticky top-24 z-10">
+                            <div className="bg-slate-100 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
                                 <p className="text-sm font-medium text-text-secondary">Live Preview</p>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
