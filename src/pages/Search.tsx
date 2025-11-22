@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Search as SearchIcon, MapPin, Star } from 'lucide-react';
 
 // Mock data for search results
@@ -16,6 +16,7 @@ export default function Search() {
     const query = searchParams.get('q') || '';
     const [results, setResults] = useState(MOCK_NOTARIES);
     const [searchTerm, setSearchTerm] = useState(query);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (query) {
@@ -31,6 +32,16 @@ export default function Search() {
         setSearchTerm(query);
     }, [query]);
 
+    const handleSearch = () => {
+        navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-6">
             <div className="max-w-6xl mx-auto">
@@ -44,16 +55,17 @@ export default function Search() {
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyDown={handleKeyDown}
                             placeholder="Search by city, state, or name"
                             className="w-full pl-10 p-3 rounded-lg border border-slate-200 focus:border-primary outline-none"
                         />
                     </div>
-                    <Link
-                        to={`/search?q=${searchTerm}`}
+                    <button
+                        onClick={handleSearch}
                         className="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-lg font-medium transition-colors flex items-center"
                     >
                         Search
-                    </Link>
+                    </button>
                 </div>
 
                 {/* Results */}

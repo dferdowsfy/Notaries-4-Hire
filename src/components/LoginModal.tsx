@@ -3,6 +3,7 @@ import { X, Eye, EyeOff } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
+import { useModal } from '../context/ModalContext';
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -16,6 +17,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { openGetListed, closeLogin } = useModal();
 
     if (!isOpen) return null;
 
@@ -34,6 +36,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSignUpClick = () => {
+        closeLogin();
+        openGetListed();
     };
 
     return (
@@ -100,7 +107,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
                 <div className="mt-6 text-center text-sm text-text-secondary">
                     Don't have an account?{' '}
-                    <button className="text-primary font-medium hover:underline">
+                    <button onClick={handleSignUpClick} className="text-primary font-medium hover:underline">
                         Sign up
                     </button>
                 </div>
