@@ -194,7 +194,7 @@ export default function Home() {
                                 onClick={openGetListed}
                                 className="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-lg shadow-primary/20"
                             >
-                                Get Started Now
+                                Get Started
                             </button>
                             <p className="text-xs text-text-secondary mt-4">30-day money-back guarantee</p>
                         </div>
