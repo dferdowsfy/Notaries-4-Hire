@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Search from './pages/Search';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
+import CustomizeProfile from './pages/CustomizeProfile';
 
 function Footer() {
     return (
@@ -32,6 +33,8 @@ export default function App() {
                                     <Route path="/" element={<Home />} />
                                     <Route path="/search" element={<Search />} />
                                     <Route path="/dashboard" element={<Dashboard />} />
+                                    <Route path="/customize-profile" element={<CustomizeProfile />} />
+                                    <Route path="/profile/:userId" element={<Profile />} />
                                     <Route path="/profile" element={<Profile />} />
                                     {/* Fallback route for demo purposes */}
                                     <Route path="*" element={<Home />} />
