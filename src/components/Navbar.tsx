@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useModal } from '../context/ModalContext';
 import LoginModal from './LoginModal';
 import GetListedModal from './GetListedModal';
-import logoIcon from '../assets/logo_icon.png';
+import logoFull from '../assets/logo_full.png';
 
 export default function Navbar() {
     const { theme } = useTheme();
@@ -36,14 +36,8 @@ export default function Navbar() {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link to="/" className="flex items-center gap-3">
-                            <img src={logoIcon} alt="Notaries 4 Hire" className="h-14 w-auto object-contain" />
-                            <div className="flex flex-col leading-none">
-                                <span className="text-2xl font-serif font-bold text-primary tracking-wide">Notaries</span>
-                                <div className="flex items-center gap-1">
-                                    <span className="text-xl font-serif font-bold text-accent">4</span>
-                                    <span className="text-xl font-serif font-bold text-primary">Hire</span>
-                                </div>
-                            </div>
+                            {/* Using the full logo image with text included */}
+                            <img src={logoFull} alt="Notaries 4 Hire" className="h-20 w-auto object-contain" />
                         </Link>
                     </div>
 
