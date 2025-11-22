@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, Calendar, Settings, Copy, Check } from 'lucide-react';
+import { User, Calendar, Settings, Copy, Check, ExternalLink, Share2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
@@ -13,6 +13,7 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const [affiliateCode, setAffiliateCode] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
+    const [profileCopied, setProfileCopied] = useState(false);
 
     // Modal states
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -47,6 +48,40 @@ export default function Dashboard() {
         }
     };
 
+    const getProfileUrl = () => {
+        return `${window.location.origin}/profile/${user?.uid}`;
+    };
+
+    const handleCopyProfileLink = () => {
+        navigator.clipboard.writeText(getProfileUrl());
+        setProfileCopied(true);
+        setTimeout(() => setProfileCopied(false), 2000);
+    };
+
+    const handleShare = async () => {
+        const profileUrl = getProfileUrl();
+
+        // Check if Web Share API is supported
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'My Notary Profile',
+                    text: 'Check out my professional notary services',
+                    url: profileUrl
+                });
+            } catch (error) {
+                // User cancelled or error occurred
+                if ((error as Error).name !== 'AbortError') {
+                    console.error('Error sharing:', error);
+                    handleCopyProfileLink(); // Fallback to copy
+                }
+            }
+        } else {
+            // Fallback to copy
+            handleCopyProfileLink();
+        }
+    };
+
     if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
     return (
@@ -56,6 +91,37 @@ export default function Dashboard() {
                     <div>
                         <h1 className="text-3xl font-serif text-text mb-2">Dashboard</h1>
                         <p className="text-text-secondary">Welcome back, {user?.email}</p>
+                    </div>
+                </div>
+
+                {/* Profile Actions */}
+                <div className="bg-white dark:bg-surface border border-slate-200 dark:border-slate-700 rounded-xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h3 className="font-bold text-lg text-text mb-1">Your Public Profile</h3>
+                        <p className="text-sm text-text-secondary">Share your profile with potential clients</p>
+                    </div>
+                    <div className="flex gap-3">
+                        <Link
+                            to="/profile"
+                            className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 text-text font-medium rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                        >
+                            <ExternalLink className="w-4 h-4" />
+                            View Profile
+                        </Link>
+                        <button
+                            onClick={handleShare}
+                            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white font-medium rounded-lg transition-colors shadow-sm shadow-primary/20"
+                        >
+                            <Share2 className="w-4 h-4" />
+                            Share
+                        </button>
+                        <button
+                            onClick={handleCopyProfileLink}
+                            className="p-2 border border-slate-200 dark:border-slate-700 text-text-secondary hover:text-text hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                            title="Copy Profile Link"
+                        >
+                            {profileCopied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+                        </button>
                     </div>
                 </div>
 
