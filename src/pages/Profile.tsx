@@ -5,6 +5,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../context/AuthContext';
 import ReviewSection from '../components/ReviewSection';
+import ContactModal from '../components/ContactModal';
 
 export default function Profile() {
     const { userId } = useParams();
@@ -13,6 +14,7 @@ export default function Profile() {
     const [profileData, setProfileData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [isOwnProfile, setIsOwnProfile] = useState(false);
+    const [isContactOpen, setIsContactOpen] = useState(false);
 
     useEffect(() => {
         const loadProfile = async () => {
@@ -120,13 +122,14 @@ export default function Profile() {
                         </div>
                     </div>
                     <button
+                        onClick={() => setIsContactOpen(true)}
                         className="px-8 py-3 rounded-full font-medium transition-colors shadow-lg"
                         style={{
                             backgroundColor: customization.primaryColor,
                             color: '#FFFFFF'
                         }}
                     >
-                        Contact
+                        Contact Me
                     </button>
                 </div>
 
@@ -263,6 +266,12 @@ export default function Profile() {
                     </div>
                 </div>
             </div>
+
+            <ContactModal
+                isOpen={isContactOpen}
+                onClose={() => setIsContactOpen(false)}
+                notaryName={profileData.fullName}
+            />
         </div>
     );
 }

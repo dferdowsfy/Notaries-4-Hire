@@ -119,9 +119,9 @@ export default function CustomizeProfile() {
 
             {/* Main Content - Side by Side */}
             <div className="max-w-[1800px] mx-auto p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                     {/* Left Sidebar - Fixed Controls */}
-                    <div className="lg:col-span-3">
+                    <div className="md:col-span-4 lg:col-span-3">
                         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden sticky top-24 h-[calc(100vh-120px)] flex flex-col">
                             {/* Header */}
                             <div className="p-6 border-b border-slate-200 bg-slate-50">
@@ -250,7 +250,7 @@ export default function CustomizeProfile() {
                     </div>
 
                     {/* Right Side - Scrollable Live Preview */}
-                    <div className="lg:col-span-9">
+                    <div className="md:col-span-8 lg:col-span-9">
                         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
                             <div className="bg-slate-100 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
                                 <p className="text-sm font-medium text-text-secondary">Live Preview</p>

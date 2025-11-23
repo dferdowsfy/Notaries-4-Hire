@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Upload, Camera } from 'lucide-react';
+import { X, Upload, Camera, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -16,6 +16,14 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Avatar generation
+    const generateSeeds = () => Array.from({ length: 6 }, () => Math.random().toString(36).substring(7));
+    const [avatarSeeds, setAvatarSeeds] = useState<string[]>([]);
+
+    useEffect(() => {
+        setAvatarSeeds(generateSeeds());
+    }, []);
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -59,7 +67,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                 setFormData(prev => ({ ...prev, photoUrl: url }));
             } catch (error) {
                 console.error("Error uploading photo:", error);
-                alert("Failed to upload photo");
+                alert("Failed to upload photo. Please try again.");
             } finally {
                 setUploading(false);
             }
@@ -147,8 +155,43 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                                 onChange={handleFileChange}
                             />
                             <span className="text-sm text-primary font-medium mt-2 cursor-pointer hover:underline" onClick={() => fileInputRef.current?.click()}>
-                                Change Photo
+                                Upload Photo
                             </span>
+
+                            {/* Avatar Selection */}
+                            <div className="mt-6 w-full">
+                                <div className="flex items-center justify-between mb-3 px-2">
+                                    <label className="text-sm font-medium text-text-secondary">Or choose an avatar</label>
+                                    <button
+                                        type="button"
+                                        onClick={() => setAvatarSeeds(generateSeeds())}
+                                        className="text-xs text-primary flex items-center gap-1 hover:underline"
+                                    >
+                                        <RefreshCw className="w-3 h-3" /> Refresh
+                                    </button>
+                                </div>
+                                <div className="flex gap-3 justify-center flex-wrap">
+                                    {avatarSeeds.map(seed => {
+                                        const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
+                                        const isSelected = formData.photoUrl === avatarUrl;
+                                        return (
+                                            <button
+                                                key={seed}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, photoUrl: avatarUrl })}
+                                                className={`w-12 h-12 rounded-full overflow-hidden border-2 transition-all ${isSelected ? 'border-primary scale-110 ring-2 ring-primary/20' : 'border-slate-200 hover:border-primary hover:scale-105'
+                                                    }`}
+                                            >
+                                                <img
+                                                    src={avatarUrl}
+                                                    alt="Avatar"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
