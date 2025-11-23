@@ -21,15 +21,15 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
     };
 
     const getAvatarUrl = (seed: string) => {
-        // Construct URL based on gender preference to bias the generation
-        const baseUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
+        // Use DiceBear v9 API
+        const baseUrl = `https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}`;
 
         if (gender === 'male') {
-            // Bias towards short hair, facial hair allowed
-            return `${baseUrl}&top[]=shortHair,shortHairDreads01,shortHairDreads02,shortHairFrizzle,shortHairShaggyMullet,shortHairShortCurly,shortHairShortFlat,shortHairShortRound,shortHairShortWaved,shortHairSides,shortHairTheCaesar,shortHairTheCaesarSidePart&facialHairProbability=50`;
+            // Bias towards short hair for male selection
+            return `${baseUrl}&top=shortHair,shortHairDreads01,shortHairDreads02,shortHairFrizzle,shortHairShaggyMullet,shortHairShortCurly,shortHairShortFlat,shortHairShortRound,shortHairShortWaved,shortHairSides,shortHairTheCaesar,shortHairTheCaesarSidePart&facialHairProbability=50`;
         } else {
-            // Bias towards long hair, no facial hair
-            return `${baseUrl}&top[]=longHairBigHair,longHairBob,longHairBun,longHairCurly,longHairCurvy,longHairDreads,longHairFrida,longHairFro,longHairFroBand,longHairMiaWallace,longHairNotTooLong,longHairShavedSides,longHairStraight,longHairStraight2,longHairStraightStrand&facialHairProbability=0`;
+            // Bias towards long hair for female selection
+            return `${baseUrl}&top=longHairBigHair,longHairBob,longHairBun,longHairCurly,longHairCurvy,longHairDreads,longHairFrida,longHairFro,longHairFroBand,longHairMiaWallace,longHairNotTooLong,longHairShavedSides,longHairStraight,longHairStraight2,longHairStraightStrand&facialHairProbability=0`;
         }
     };
 
@@ -81,8 +81,8 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
                     <button
                         onClick={() => setActiveTab('avatars')}
                         className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${activeTab === 'avatars'
-                                ? 'text-primary border-b-2 border-primary bg-primary/5'
-                                : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
+                            ? 'text-primary border-b-2 border-primary bg-primary/5'
+                            : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
                             }`}
                     >
                         <User className="w-4 h-4" />
@@ -91,8 +91,8 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
                     <button
                         onClick={() => setActiveTab('upload')}
                         className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${activeTab === 'upload'
-                                ? 'text-primary border-b-2 border-primary bg-primary/5'
-                                : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
+                            ? 'text-primary border-b-2 border-primary bg-primary/5'
+                            : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
                             }`}
                     >
                         <Upload className="w-4 h-4" />

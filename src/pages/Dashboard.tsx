@@ -8,6 +8,8 @@ import EditProfileModal from '../components/EditProfileModal';
 import AvailabilityModal from '../components/AvailabilityModal';
 import AccountSettingsModal from '../components/AccountSettingsModal';
 
+import ShareModal from '../components/ShareModal';
+
 export default function Dashboard() {
     const { user, isNotary, loading } = useAuth();
     const navigate = useNavigate();
@@ -19,6 +21,7 @@ export default function Dashboard() {
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [isAvailabilityOpen, setIsAvailabilityOpen] = useState(false);
     const [isAccountSettingsOpen, setIsAccountSettingsOpen] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     useEffect(() => {
         if (!loading && !user) {
@@ -146,6 +149,13 @@ export default function Dashboard() {
                                 {`${window.location.origin}/?ref=${affiliateCode}`}
                             </code>
                             <button
+                                onClick={() => setIsShareModalOpen(true)}
+                                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors text-primary"
+                                title="Share Link"
+                            >
+                                <Share2 className="w-4 h-4" />
+                            </button>
+                            <button
                                 onClick={copyToClipboard}
                                 className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors text-text-secondary"
                                 title="Copy Link"
@@ -197,6 +207,16 @@ export default function Dashboard() {
             <EditProfileModal isOpen={isEditProfileOpen} onClose={() => setIsEditProfileOpen(false)} />
             <AvailabilityModal isOpen={isAvailabilityOpen} onClose={() => setIsAvailabilityOpen(false)} />
             <AccountSettingsModal isOpen={isAccountSettingsOpen} onClose={() => setIsAccountSettingsOpen(false)} />
+
+            {affiliateCode && (
+                <ShareModal
+                    isOpen={isShareModalOpen}
+                    onClose={() => setIsShareModalOpen(false)}
+                    shareUrl={`${window.location.origin}/?ref=${affiliateCode}`}
+                    title="Join Notaries 4 Hire"
+                    text="Use my referral link to join Notaries 4 Hire and grow your notary business!"
+                />
+            )}
         </div>
     );
 }
