@@ -232,16 +232,17 @@ export default function Profile() {
                         </section>
 
                         {/* Why Choose Me */}
+                        {/* Why Choose Me */}
                         <section className="bg-white rounded-2xl p-8 shadow-sm border border-[#E2E8F0]">
                             <h2 className="text-2xl font-serif font-bold text-[#102A43] mb-6">Why Clients Choose Me</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                                 <ul className="space-y-4">
-                                    {[
+                                    {(profile.customSections?.whyChooseMe || [
                                         'Certified & Insured for your peace of mind',
                                         'Evening & Weekend Availability',
                                         'Same-day appointments often available',
                                         'Travel to homes, offices, and hospitals'
-                                    ].map((item, i) => (
+                                    ]).map((item: string, i: number) => (
                                         <li key={i} className="flex items-start gap-3">
                                             <div className="mt-1 w-5 h-5 rounded-full bg-[#F4B740]/20 flex items-center justify-center flex-shrink-0">
                                                 <CheckCircle className="w-3 h-3 text-[#F4B740]" />
@@ -264,23 +265,23 @@ export default function Profile() {
                         <section id="services">
                             <h2 className="text-2xl font-serif font-bold text-[#102A43] mb-6">Services & Fees</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {[
+                                {(profile.customSections?.servicesList || [
                                     { name: 'General Notarization', price: '$40', unit: 'per signature', time: '15 min', type: 'Mobile' },
                                     { name: 'Loan Signing', price: '$150', unit: 'flat fee', time: '1-2 hrs', type: 'Mobile' },
                                     { name: 'Remote Notarization', price: '$25', unit: 'per signature', time: '15 min', type: 'Remote' },
                                     { name: 'Apostille Service', price: '$100', unit: 'starting at', time: 'Varies', type: 'Service' }
-                                ].map((service, i) => (
+                                ]).map((service: any, i: number) => (
                                     <div key={i} className="bg-white p-6 rounded-xl border border-[#E2E8F0] hover:shadow-md transition-shadow">
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="font-bold text-[#102A43]">{service.name}</h3>
-                                            <span className="px-2 py-1 bg-slate-100 text-xs font-bold text-[#6B7280] rounded uppercase">{service.type}</span>
+                                            <span className="px-2 py-1 bg-slate-100 text-xs font-bold text-[#6B7280] rounded uppercase">{service.type || 'Service'}</span>
                                         </div>
                                         <div className="flex items-baseline gap-1 mb-2">
                                             <span className="text-2xl font-bold text-[#102A43]">{service.price}</span>
-                                            <span className="text-sm text-[#6B7280]">{service.unit}</span>
+                                            <span className="text-sm text-[#6B7280]">{service.unit || ''}</span>
                                         </div>
                                         <p className="text-sm text-[#6B7280] flex items-center gap-1">
-                                            <Clock className="w-3 h-3" /> Typical duration: {service.time}
+                                            <Clock className="w-3 h-3" /> Typical duration: {service.time || 'Varies'}
                                         </p>
                                     </div>
                                 ))}

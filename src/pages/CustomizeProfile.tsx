@@ -9,6 +9,41 @@ import { useAuth } from '../context/AuthContext';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
+const EditableText = ({
+    value,
+    onChange,
+    className = '',
+    style = {},
+    multiline = false
+}: {
+    value: string,
+    onChange: (val: string) => void,
+    className?: string,
+    style?: React.CSSProperties,
+    multiline?: boolean
+}) => {
+    if (multiline) {
+        return (
+            <textarea
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                className={`bg-transparent border border-transparent hover:border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary rounded px-1 -mx-1 w-full resize-none outline-none transition-all ${className}`}
+                style={style}
+                rows={value.split('\n').length || 3}
+            />
+        );
+    }
+    return (
+        <input
+            type="text"
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            className={`bg-transparent border border-transparent hover:border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary rounded px-1 -mx-1 w-full outline-none transition-all ${className}`}
+            style={style}
+        />
+    );
+};
+
 export default function CustomizeProfile() {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -31,7 +66,18 @@ export default function CustomizeProfile() {
         city: 'City',
         state: 'State',
         photoUrl: '',
-        services: [] as string[]
+        services: [] as string[],
+        customSections: {
+            whyChooseMe: [
+                'Certified & Insured for your peace of mind',
+                'Evening & Weekend Availability',
+                'Same-day appointments often available'
+            ],
+            servicesList: [
+                { name: 'General Notarization', price: '$40' },
+                { name: 'Loan Signing', price: '$150' }
+            ]
+        }
     });
 
     useEffect(() => {
@@ -44,6 +90,19 @@ export default function CustomizeProfile() {
                     if (data.customization) {
                         setCustomization({ ...customization, ...data.customization });
                     }
+
+                    const defaultCustomSections = {
+                        whyChooseMe: [
+                            'Certified & Insured for your peace of mind',
+                            'Evening & Weekend Availability',
+                            'Same-day appointments often available'
+                        ],
+                        servicesList: [
+                            { name: 'General Notarization', price: '$40' },
+                            { name: 'Loan Signing', price: '$150' }
+                        ]
+                    };
+
                     setProfileData({
                         fullName: data.fullName || 'Your Name',
                         bio: data.bio || '',
@@ -51,7 +110,8 @@ export default function CustomizeProfile() {
                         city: data.city || 'City',
                         state: data.state || 'State',
                         photoUrl: data.photoUrl || '',
-                        services: data.services || []
+                        services: data.services || [],
+                        customSections: data.customSections || defaultCustomSections
                     });
                 }
             }
@@ -66,7 +126,8 @@ export default function CustomizeProfile() {
             const docRef = doc(db, 'notaries', user.uid);
             await updateDoc(docRef, {
                 customization,
-                tagline: profileData.tagline
+                tagline: profileData.tagline,
+                customSections: profileData.customSections
             });
             alert('Profile customization saved!');
         } catch (error) {
@@ -75,6 +136,30 @@ export default function CustomizeProfile() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const updateWhyChooseMe = (index: number, value: string) => {
+        const newItems = [...profileData.customSections.whyChooseMe];
+        newItems[index] = value;
+        setProfileData({
+            ...profileData,
+            customSections: {
+                ...profileData.customSections,
+                whyChooseMe: newItems
+            }
+        });
+    };
+
+    const updateService = (index: number, field: 'name' | 'price', value: string) => {
+        const newServices = [...profileData.customSections.servicesList];
+        newServices[index] = { ...newServices[index], [field]: value };
+        setProfileData({
+            ...profileData,
+            customSections: {
+                ...profileData.customSections,
+                servicesList: newServices
+            }
+        });
     };
 
     const presetThemes = [
@@ -299,7 +384,7 @@ export default function CustomizeProfile() {
                     <div className="md:col-span-8 lg:col-span-9">
                         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
                             <div className="bg-slate-100 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-                                <p className="text-sm font-medium text-text-secondary">Live Preview</p>
+                                <p className="text-sm font-medium text-text-secondary">Live Preview (Click text to edit)</p>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                                     <span className="text-xs text-text-secondary">Auto-updating</span>
@@ -379,9 +464,13 @@ export default function CustomizeProfile() {
                                                 <span className="px-3 py-1 bg-slate-100 rounded-full text-sm font-medium" style={{ color: customization.primaryColor }}>Mobile Notary</span>
                                                 <span className="px-3 py-1 bg-slate-100 rounded-full text-sm font-medium" style={{ color: customization.primaryColor }}>Spanish-speaking</span>
                                             </div>
-                                            <p className="leading-relaxed mb-8" style={{ color: customization.textColor }}>
-                                                {profileData.bio || "Experienced notary public providing prompt and reliable mobile notary services."}
-                                            </p>
+                                            <EditableText
+                                                value={profileData.bio || "Experienced notary public providing prompt and reliable mobile notary services."}
+                                                onChange={(val) => setProfileData({ ...profileData, bio: val })}
+                                                multiline
+                                                style={{ color: customization.textColor }}
+                                                className="leading-relaxed mb-8"
+                                            />
                                             <div className="grid grid-cols-3 gap-6 border-t border-slate-200 pt-6">
                                                 <div>
                                                     <p className="text-sm text-slate-500">Avg. Response</p>
@@ -402,16 +491,17 @@ export default function CustomizeProfile() {
                                         <section className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
                                             <h2 className="text-2xl font-bold mb-6" style={{ color: customization.primaryColor, fontFamily: customization.headingFont === 'serif' ? 'serif' : 'sans-serif' }}>Why Clients Choose Me</h2>
                                             <ul className="space-y-4">
-                                                {[
-                                                    'Certified & Insured for your peace of mind',
-                                                    'Evening & Weekend Availability',
-                                                    'Same-day appointments often available'
-                                                ].map((item, i) => (
+                                                {profileData.customSections.whyChooseMe.map((item, i) => (
                                                     <li key={i} className="flex items-start gap-3">
                                                         <div className="mt-1 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${customization.accentColor}33` }}>
                                                             <CheckCircle className="w-3 h-3" style={{ color: customization.accentColor }} />
                                                         </div>
-                                                        <span className="font-medium" style={{ color: customization.textColor }}>{item}</span>
+                                                        <EditableText
+                                                            value={item}
+                                                            onChange={(val) => updateWhyChooseMe(i, val)}
+                                                            style={{ color: customization.textColor }}
+                                                            className="font-medium"
+                                                        />
                                                     </li>
                                                 ))}
                                             </ul>
@@ -421,16 +511,23 @@ export default function CustomizeProfile() {
                                         <section>
                                             <h2 className="text-2xl font-bold mb-6" style={{ color: customization.primaryColor, fontFamily: customization.headingFont === 'serif' ? 'serif' : 'sans-serif' }}>Services & Fees</h2>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                {[
-                                                    { name: 'General Notarization', price: '$40' },
-                                                    { name: 'Loan Signing', price: '$150' }
-                                                ].map((service, i) => (
+                                                {profileData.customSections.servicesList.map((service, i) => (
                                                     <div key={i} className="bg-white p-6 rounded-xl border border-slate-200">
                                                         <div className="flex justify-between items-start mb-2">
-                                                            <h3 className="font-bold" style={{ color: customization.primaryColor }}>{service.name}</h3>
+                                                            <EditableText
+                                                                value={service.name}
+                                                                onChange={(val) => updateService(i, 'name', val)}
+                                                                style={{ color: customization.primaryColor }}
+                                                                className="font-bold"
+                                                            />
                                                         </div>
                                                         <div className="flex items-baseline gap-1">
-                                                            <span className="text-2xl font-bold" style={{ color: customization.primaryColor }}>{service.price}</span>
+                                                            <EditableText
+                                                                value={service.price}
+                                                                onChange={(val) => updateService(i, 'price', val)}
+                                                                style={{ color: customization.primaryColor }}
+                                                                className="text-2xl font-bold"
+                                                            />
                                                         </div>
                                                     </div>
                                                 ))}

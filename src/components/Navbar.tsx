@@ -32,7 +32,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="w-full py-4 px-6 bg-white dark:bg-surface border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50 transition-colors duration-300">
+            <nav className="w-full py-2 px-6 bg-white dark:bg-surface border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50 transition-colors duration-300">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link to="/" className="flex items-center gap-3">
