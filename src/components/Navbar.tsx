@@ -41,15 +41,15 @@ export default function Navbar() {
                         </Link>
                     </div>
 
-                    {/* Desktop Menu - Hidden on mobile/tablet (lg and down) */}
-                    <div className="hidden lg:flex items-center gap-8 text-text-secondary font-medium">
+                    {/* Desktop Menu - Hidden on mobile/tablet (md and down) */}
+                    <div className="hidden md:flex items-center gap-8 text-text-secondary font-medium">
                         <Link to="/" className="text-primary hover:text-primary-hover transition-colors">Home</Link>
                         <button onClick={() => scrollToSection('search')} className="hover:text-primary transition-colors">Find Notaries</button>
                         <button onClick={() => scrollToSection('services')} className="hover:text-primary transition-colors">Services</button>
                     </div>
 
-                    {/* Desktop Auth Buttons - Hidden on mobile/tablet (lg and down) */}
-                    <div className="hidden lg:flex items-center gap-6">
+                    {/* Desktop Auth Buttons - Hidden on mobile/tablet (md and down) */}
+                    <div className="hidden md:flex items-center gap-6">
                         {user ? (
                             <div className="flex items-center gap-4">
                                 <Link to="/dashboard" className="font-medium text-text hover:text-primary transition-colors">
@@ -80,9 +80,9 @@ export default function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button - Visible on mobile/tablet (lg and down) */}
+                    {/* Mobile Menu Button - Visible on mobile/tablet (md and down) */}
                     <button
-                        className="lg:hidden text-text p-2"
+                        className="md:hidden text-text p-2"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     >
                         {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

@@ -88,7 +88,7 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
                 subscriptionPlan: 'professional', // Upgraded plan
                 subscriptionStatus: 'active',
                 paymentToken: paymentToken ? paymentToken.id : null, // Store token reference (do not store actual card data)
-                photoUrl: null,
+                photoUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`, // Generate unique cartoon avatar
                 availability: {}
             });
 
