@@ -53,7 +53,7 @@ function AppContent() {
                     <Route path="*" element={<Home />} />
                 </Routes>
             </main>
-            <Footer />
+            {!isProfilePage && <Footer />}
         </div>
     );
 }
