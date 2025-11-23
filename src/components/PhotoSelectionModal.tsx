@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, Upload, RefreshCw, User, Image as ImageIcon } from 'lucide-react';
+import { X, Upload, User, Image as ImageIcon } from 'lucide-react';
 
 interface PhotoSelectionModalProps {
     isOpen: boolean;
@@ -10,28 +10,24 @@ interface PhotoSelectionModalProps {
 export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: PhotoSelectionModalProps) {
     const [activeTab, setActiveTab] = useState<'avatars' | 'upload'>('avatars');
     const [gender, setGender] = useState<'male' | 'female'>('male');
-    const [seeds, setSeeds] = useState<string[]>(Array.from({ length: 12 }, () => Math.random().toString(36).substring(7)));
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [dragActive, setDragActive] = useState(false);
 
     if (!isOpen) return null;
 
-    const generateNewSeeds = () => {
-        setSeeds(Array.from({ length: 12 }, () => Math.random().toString(36).substring(7)));
-    };
+    // Local avatars generated
+    const avatars = [
+        // Male avatars - assuming the file names from the generation step
+        { id: 'm1', url: '/avatars/avatar_male_1.png', gender: 'male' },
+        { id: 'm2', url: '/avatars/avatar_male_2.png', gender: 'male' },
+        { id: 'm3', url: '/avatars/avatar_male_3.png', gender: 'male' },
+        // Female avatars
+        { id: 'f1', url: '/avatars/avatar_female_1.png', gender: 'female' },
+        { id: 'f2', url: '/avatars/avatar_female_2.png', gender: 'female' },
+        { id: 'f3', url: '/avatars/avatar_female_3.png', gender: 'female' },
+    ];
 
-    const getAvatarUrl = (seed: string) => {
-        // Use DiceBear v9 API
-        const baseUrl = `https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}`;
-
-        if (gender === 'male') {
-            // Bias towards short hair for male selection
-            return `${baseUrl}&top=shortHair,shortHairDreads01,shortHairDreads02,shortHairFrizzle,shortHairShaggyMullet,shortHairShortCurly,shortHairShortFlat,shortHairShortRound,shortHairShortWaved,shortHairSides,shortHairTheCaesar,shortHairTheCaesarSidePart&facialHairProbability=50`;
-        } else {
-            // Bias towards long hair for female selection
-            return `${baseUrl}&top=longHairBigHair,longHairBob,longHairBun,longHairCurly,longHairCurvy,longHairDreads,longHairFrida,longHairFro,longHairFroBand,longHairMiaWallace,longHairNotTooLong,longHairShavedSides,longHairStraight,longHairStraight2,longHairStraightStrand&facialHairProbability=0`;
-        }
-    };
+    const filteredAvatars = avatars.filter(avatar => avatar.gender === gender);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -40,7 +36,6 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
     };
 
     const handleFileSelect = (file: File) => {
-        // Create a fake local URL for preview, pass file back to parent for upload
         const url = URL.createObjectURL(file);
         onSelect(url, file);
         onClose();
@@ -81,8 +76,8 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
                     <button
                         onClick={() => setActiveTab('avatars')}
                         className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${activeTab === 'avatars'
-                            ? 'text-primary border-b-2 border-primary bg-primary/5'
-                            : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
+                                ? 'text-primary border-b-2 border-primary bg-primary/5'
+                                : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
                             }`}
                     >
                         <User className="w-4 h-4" />
@@ -91,8 +86,8 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
                     <button
                         onClick={() => setActiveTab('upload')}
                         className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${activeTab === 'upload'
-                            ? 'text-primary border-b-2 border-primary bg-primary/5'
-                            : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
+                                ? 'text-primary border-b-2 border-primary bg-primary/5'
+                                : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
                             }`}
                     >
                         <Upload className="w-4 h-4" />
@@ -108,14 +103,14 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
                             <div className="flex justify-center">
                                 <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg inline-flex">
                                     <button
-                                        onClick={() => { setGender('male'); generateNewSeeds(); }}
+                                        onClick={() => setGender('male')}
                                         className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${gender === 'male' ? 'bg-white dark:bg-surface shadow-sm text-text' : 'text-text-secondary hover:text-text'
                                             }`}
                                     >
                                         Male
                                     </button>
                                     <button
-                                        onClick={() => { setGender('female'); generateNewSeeds(); }}
+                                        onClick={() => setGender('female')}
                                         className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${gender === 'female' ? 'bg-white dark:bg-surface shadow-sm text-text' : 'text-text-secondary hover:text-text'
                                             }`}
                                     >
@@ -125,33 +120,23 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
                             </div>
 
                             {/* Avatar Grid */}
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-                                {seeds.map(seed => (
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                                {filteredAvatars.map(avatar => (
                                     <button
-                                        key={seed}
+                                        key={avatar.id}
                                         onClick={() => {
-                                            onSelect(getAvatarUrl(seed));
+                                            onSelect(avatar.url);
                                             onClose();
                                         }}
                                         className="aspect-square rounded-full border-2 border-slate-100 dark:border-slate-700 hover:border-primary hover:scale-105 transition-all overflow-hidden bg-slate-50 dark:bg-slate-800"
                                     >
                                         <img
-                                            src={getAvatarUrl(seed)}
+                                            src={avatar.url}
                                             alt="Avatar"
                                             className="w-full h-full object-cover"
                                         />
                                     </button>
                                 ))}
-                            </div>
-
-                            <div className="flex justify-center">
-                                <button
-                                    onClick={generateNewSeeds}
-                                    className="flex items-center gap-2 text-primary hover:text-primary-hover font-medium text-sm"
-                                >
-                                    <RefreshCw className="w-4 h-4" />
-                                    Generate More
-                                </button>
                             </div>
                         </div>
                     ) : (

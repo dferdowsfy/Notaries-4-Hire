@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useSearchParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ModalProvider } from './context/ModalContext';
@@ -24,6 +24,8 @@ function Footer() {
 function AppContent() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const isProfilePage = location.pathname.startsWith('/profile');
 
     // Intercept Firebase action URL parameters
     useEffect(() => {
@@ -37,7 +39,7 @@ function AppContent() {
 
     return (
         <div className="min-h-screen bg-white dark:bg-background text-text font-sans flex flex-col transition-colors duration-300">
-            <Navbar />
+            {!isProfilePage && <Navbar />}
             <main className="flex-grow">
                 <Routes>
                     <Route path="/" element={<Home />} />

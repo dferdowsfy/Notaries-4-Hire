@@ -15,6 +15,7 @@ export default function AccountSettingsModal({ isOpen, onClose }: AccountSetting
     const [plan, setPlan] = useState('basic');
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState<'basic' | 'pro'>('basic');
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -88,8 +89,8 @@ export default function AccountSettingsModal({ isOpen, onClose }: AccountSetting
                                 <div
                                     onClick={() => handlePlanClick('basic')}
                                     className={`p-6 rounded-xl border-2 transition-all cursor-pointer ${plan === 'basic'
-                                            ? 'border-primary bg-primary/5'
-                                            : 'border-slate-100 hover:border-primary/50'
+                                        ? 'border-primary bg-primary/5'
+                                        : 'border-slate-100 hover:border-primary/50'
                                         }`}
                                 >
                                     <div className="flex justify-between items-start mb-4">
@@ -117,8 +118,8 @@ export default function AccountSettingsModal({ isOpen, onClose }: AccountSetting
                                 <div
                                     onClick={() => handlePlanClick('pro')}
                                     className={`p-6 rounded-xl border-2 transition-all cursor-pointer ${plan === 'pro'
-                                            ? 'border-accent bg-accent/5'
-                                            : 'border-slate-100 hover:border-accent/50'
+                                        ? 'border-accent bg-accent/5'
+                                        : 'border-slate-100 hover:border-accent/50'
                                         }`}
                                 >
                                     <div className="flex justify-between items-start mb-4">
@@ -162,7 +163,10 @@ export default function AccountSettingsModal({ isOpen, onClose }: AccountSetting
                                         <p className="text-xs text-text-secondary">Expires 12/25</p>
                                     </div>
                                 </div>
-                                <button className="text-primary font-medium hover:underline text-sm">
+                                <button
+                                    onClick={() => setIsPaymentModalOpen(true)}
+                                    className="text-primary font-medium hover:underline text-sm"
+                                >
                                     Update
                                 </button>
                             </div>
@@ -232,6 +236,41 @@ export default function AccountSettingsModal({ isOpen, onClose }: AccountSetting
                                 {loading ? 'Processing...' : 'Confirm'}
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+            {/* Payment Update Modal */}
+            {isPaymentModalOpen && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-surface w-full max-w-md rounded-2xl shadow-2xl p-8 animate-in fade-in zoom-in duration-200">
+                        <h3 className="text-xl font-bold text-text mb-6">Update Payment Method</h3>
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            // Simulate update
+                            alert("Payment method updated successfully!");
+                            setIsPaymentModalOpen(false);
+                        }}>
+                            <div className="space-y-4 mb-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-text mb-1">Card Number</label>
+                                    <input type="text" placeholder="0000 0000 0000 0000" className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-background text-text focus:border-primary outline-none" required />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-text mb-1">Expiry</label>
+                                        <input type="text" placeholder="MM/YY" className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-background text-text focus:border-primary outline-none" required />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-text mb-1">CVC</label>
+                                        <input type="text" placeholder="123" className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-background text-text focus:border-primary outline-none" required />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex gap-3">
+                                <button type="button" onClick={() => setIsPaymentModalOpen(false)} className="flex-1 px-6 py-2 border border-slate-200 dark:border-slate-700 text-text font-medium rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Cancel</button>
+                                <button type="submit" className="flex-1 px-6 py-2 bg-primary hover:bg-primary-hover text-white font-medium rounded-lg transition-colors">Save</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
