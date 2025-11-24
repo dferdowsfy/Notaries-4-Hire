@@ -61,6 +61,10 @@ export default function Navbar() {
                     behavior: 'smooth'
                 });
             }
+            // Set active section after scrolling
+            if (location.pathname === '/') {
+                setActiveSection(id);
+            }
         };
 
         if (location.pathname !== '/') {
@@ -69,6 +73,24 @@ export default function Navbar() {
         } else {
             scroll();
         }
+    };
+
+    // Determine which navigation item should be highlighted
+    const activeItem = (() => {
+        if (location.pathname === '/title-producers') return 'title-producers';
+        if (location.pathname === '/') return activeSection || '';
+        return '';
+    })();
+    // activeNav resolves to a specific key for each nav element
+    const activeNav = activeItem === '' ? 'home' : activeItem;
+
+    // Helper to generate class for nav items
+    const navClass = (item: string) => {
+        const base = 'transition-colors pb-1 border-b-2';
+        const isActive = activeNav === item;
+        const activeClasses = 'text-primary border-accent';
+        const inactiveClasses = 'text-text-secondary border-transparent hover:text-primary';
+        return `${base} ${isActive ? activeClasses : inactiveClasses}`;
     };
 
     return (
@@ -86,37 +108,26 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center gap-8 text-text-secondary font-medium">
                         <Link
                             to="/"
-                            className={`transition-colors pb-1 border-b-2 ${location.pathname === '/'
-                                ? 'text-primary border-accent'
-                                : 'text-text-secondary border-transparent hover:text-primary'
-                                }`}
+                            onClick={() => setActiveSection('')}
+                            className={navClass('home')}
                         >
                             Home
                         </Link>
                         <button
                             onClick={() => scrollToSection('services')}
-                            className={`transition-colors pb-1 border-b-2 ${activeSection === 'services'
-                                ? 'text-primary border-accent'
-                                : 'border-transparent hover:text-primary'
-                                }`}
+                            className={navClass('services')}
                         >
                             Services
                         </button>
                         <button
                             onClick={() => scrollToSection('search')}
-                            className={`transition-colors pb-1 border-b-2 ${activeSection === 'search'
-                                ? 'text-primary border-accent'
-                                : 'border-transparent hover:text-primary'
-                                }`}
+                            className={navClass('search')}
                         >
                             Find Notaries
                         </button>
                         <Link
                             to="/title-producers"
-                            className={`transition-colors pb-1 border-b-2 ${location.pathname === '/title-producers'
-                                ? 'text-primary border-accent'
-                                : 'text-text-secondary border-transparent hover:text-primary'
-                                }`}
+                            className={navClass('title-producers')}
                         >
                             Title Producers
                         </Link>
@@ -179,8 +190,8 @@ export default function Navbar() {
                         <button
                             onClick={() => scrollToSection('services')}
                             className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeSection === 'services'
-                                    ? 'text-primary border-accent bg-accent/5'
-                                    : 'text-text border-transparent hover:bg-slate-50'
+                                ? 'text-primary border-accent bg-accent/5'
+                                : 'text-text border-transparent hover:bg-slate-50'
                                 }`}
                         >
                             Services
@@ -188,8 +199,8 @@ export default function Navbar() {
                         <button
                             onClick={() => scrollToSection('search')}
                             className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeSection === 'search'
-                                    ? 'text-primary border-accent bg-accent/5'
-                                    : 'text-text border-transparent hover:bg-slate-50'
+                                ? 'text-primary border-accent bg-accent/5'
+                                : 'text-text border-transparent hover:bg-slate-50'
                                 }`}
                         >
                             Find Notaries
