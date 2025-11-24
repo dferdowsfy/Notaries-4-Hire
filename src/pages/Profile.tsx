@@ -10,6 +10,9 @@ import { db } from '../../firebase';
 import ContactModal from '../components/ContactModal';
 import { useAuth } from '../context/AuthContext';
 
+import ReportModal from '../components/ReportModal';
+import BookingModal from '../components/BookingModal';
+
 export default function Profile() {
     const { userId } = useParams();
     const { user: currentUser } = useAuth();
@@ -17,6 +20,8 @@ export default function Profile() {
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [isContactOpen, setIsContactOpen] = useState(false);
+    const [isBookingOpen, setIsBookingOpen] = useState(false);
+    const [isReportOpen, setIsReportOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('overview');
 
@@ -31,7 +36,7 @@ export default function Profile() {
                 const docRef = doc(db, 'notaries', targetId);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    setProfile(docSnap.data());
+                    setProfile({ id: docSnap.id, ...docSnap.data() });
                 }
             } catch (error) {
                 console.error("Error fetching profile:", error);
@@ -48,6 +53,24 @@ export default function Profile() {
             element.scrollIntoView({ behavior: 'smooth' });
             setActiveSection(id);
             setIsMobileMenuOpen(false);
+        }
+    };
+
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: `Notary Profile: ${profile.fullName}`,
+                    text: `Check out ${profile.fullName}'s profile on Notaries4Hire`,
+                    url: window.location.href,
+                });
+            } catch (error) {
+                console.log('Error sharing:', error);
+            }
+        } else {
+            // Fallback to clipboard
+            navigator.clipboard.writeText(window.location.href);
+            alert('Profile link copied to clipboard!');
         }
     };
 
@@ -144,7 +167,7 @@ export default function Profile() {
                                     </div>
 
                                     <button
-                                        onClick={() => setIsContactOpen(true)}
+                                        onClick={() => setIsBookingOpen(true)}
                                         className="w-full py-3 bg-[#F4B740] hover:bg-[#E0A839] text-[#102A43] font-bold rounded-lg mb-3 transition-colors"
                                     >
                                         Book Appointment
@@ -177,10 +200,16 @@ export default function Profile() {
 
                             {/* Sidebar Footer */}
                             <div className="flex justify-center gap-6 text-sm text-[#6B7280]">
-                                <button className="flex items-center gap-2 hover:text-[#102A43]">
+                                <button
+                                    onClick={handleShare}
+                                    className="flex items-center gap-2 hover:text-[#102A43]"
+                                >
                                     <Share2 className="w-4 h-4" /> Share
                                 </button>
-                                <button className="flex items-center gap-2 hover:text-red-600">
+                                <button
+                                    onClick={() => setIsReportOpen(true)}
+                                    className="flex items-center gap-2 hover:text-red-600"
+                                >
                                     <Flag className="w-4 h-4" /> Report
                                 </button>
                             </div>
@@ -422,6 +451,8 @@ export default function Profile() {
             </div>
 
             <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} notaryName={profile.fullName} />
+            <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} notaryName={profile.fullName} notaryEmail={profile.email} />
+            <ReportModal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} notaryName={profile.fullName} notaryId={profile.id} />
         </div>
     );
 }
