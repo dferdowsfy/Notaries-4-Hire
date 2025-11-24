@@ -9,6 +9,7 @@ import Search from './pages/Search';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import CustomizeProfile from './pages/CustomizeProfile';
+import AdminPanel from './pages/AdminPanel';
 import ResetPassword from './pages/ResetPassword';
 
 function Footer() {
@@ -26,6 +27,7 @@ function AppContent() {
     const navigate = useNavigate();
     const location = useLocation();
     const isProfilePage = location.pathname.startsWith('/profile');
+    const isAdminPage = location.pathname.startsWith('/admin');
 
     // Intercept Firebase action URL parameters
     useEffect(() => {
@@ -39,7 +41,7 @@ function AppContent() {
 
     return (
         <div className="min-h-screen bg-white dark:bg-background text-text font-sans flex flex-col transition-colors duration-300">
-            {!isProfilePage && <Navbar />}
+            {!isProfilePage && !isAdminPage && <Navbar />}
             <main className="flex-grow">
                 <Routes>
                     <Route path="/" element={<Home />} />
@@ -48,12 +50,13 @@ function AppContent() {
                     <Route path="/customize-profile" element={<CustomizeProfile />} />
                     <Route path="/profile/:userId" element={<Profile />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/admin" element={<AdminPanel />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     {/* Fallback route for demo purposes */}
                     <Route path="*" element={<Home />} />
                 </Routes>
             </main>
-            {!isProfilePage && <Footer />}
+            {!isProfilePage && !isAdminPage && <Footer />}
         </div>
     );
 }

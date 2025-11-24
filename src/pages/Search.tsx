@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Search as SearchIcon, MapPin, Star } from 'lucide-react';
+import { Search as SearchIcon, MapPin, Star, Shield } from 'lucide-react';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../../firebase';
 
@@ -106,7 +106,17 @@ export default function Search() {
                                 </div>
                                 <div className="p-6">
                                     <div className="flex justify-between items-start mb-2">
-                                        <h3 className="font-bold text-lg text-text">{notary.fullName || 'Notary Professional'}</h3>
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="font-bold text-lg text-text">{notary.fullName || 'Notary Professional'}</h3>
+                                            {notary.verified && (
+                                                <div className="relative group">
+                                                    <Shield className="w-4 h-4 text-accent fill-current" />
+                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                                                        Verified Member
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                         <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded text-xs font-bold text-text">
                                             <Star className="w-3 h-3 text-accent fill-accent" /> {notary.rating || 5.0}
                                         </div>
