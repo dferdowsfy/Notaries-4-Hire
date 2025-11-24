@@ -179,39 +179,39 @@ export default function Navbar() {
                     <div className="lg:hidden pt-4 pb-6 border-t border-slate-100 mt-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
                         <Link
                             to="/"
-                            className={`font-medium py-2 px-2 rounded-lg border-l-4 ${location.pathname === '/'
-                                ? 'text-primary border-accent bg-accent/5'
-                                : 'text-text border-transparent hover:bg-slate-50'
+                            onClick={() => { setActiveSection(''); setIsMobileMenuOpen(false); }}
+                            className={`font-medium py-2 px-2 rounded-lg border-l-4 ${activeNav === 'home'
+                                    ? 'text-primary border-accent bg-accent/5'
+                                    : 'text-text border-transparent hover:bg-slate-50'
                                 }`}
-                            onClick={() => setIsMobileMenuOpen(false)}
                         >
                             Home
                         </Link>
                         <button
                             onClick={() => scrollToSection('services')}
-                            className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeSection === 'services'
-                                ? 'text-primary border-accent bg-accent/5'
-                                : 'text-text border-transparent hover:bg-slate-50'
+                            className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeNav === 'services'
+                                    ? 'text-primary border-accent bg-accent/5'
+                                    : 'text-text border-transparent hover:bg-slate-50'
                                 }`}
                         >
                             Services
                         </button>
                         <button
                             onClick={() => scrollToSection('search')}
-                            className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeSection === 'search'
-                                ? 'text-primary border-accent bg-accent/5'
-                                : 'text-text border-transparent hover:bg-slate-50'
+                            className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeNav === 'search'
+                                    ? 'text-primary border-accent bg-accent/5'
+                                    : 'text-text border-transparent hover:bg-slate-50'
                                 }`}
                         >
                             Find Notaries
                         </button>
                         <Link
                             to="/title-producers"
-                            className={`font-medium py-2 px-2 rounded-lg border-l-4 ${location.pathname === '/title-producers'
-                                ? 'text-primary border-accent bg-accent/5'
-                                : 'text-text border-transparent hover:bg-slate-50'
-                                }`}
                             onClick={() => setIsMobileMenuOpen(false)}
+                            className={`font-medium py-2 px-2 rounded-lg border-l-4 ${activeNav === 'title-producers'
+                                    ? 'text-primary border-accent bg-accent/5'
+                                    : 'text-text border-transparent hover:bg-slate-50'
+                                }`}
                         >
                             Title Producers
                         </Link>
