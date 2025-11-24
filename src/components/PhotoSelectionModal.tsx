@@ -17,14 +17,14 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
 
     // Local avatars generated
     const avatars = [
-        // Male avatars - assuming the file names from the generation step
-        { id: 'm1', url: '/avatars/avatar_male_1.png', gender: 'male' },
-        { id: 'm2', url: '/avatars/avatar_male_2.png', gender: 'male' },
-        { id: 'm3', url: '/avatars/avatar_male_3.png', gender: 'male' },
+        // Male avatars
+        { id: 'm1', url: '/avatars/avatar_male_1_1763939825079.png', gender: 'male' },
+        { id: 'm2', url: '/avatars/avatar_male_2_1763939854892.png', gender: 'male' },
+        { id: 'm3', url: '/avatars/avatar_male_3_1763939878235.png', gender: 'male' },
         // Female avatars
-        { id: 'f1', url: '/avatars/avatar_female_1.png', gender: 'female' },
-        { id: 'f2', url: '/avatars/avatar_female_2.png', gender: 'female' },
-        { id: 'f3', url: '/avatars/avatar_female_3.png', gender: 'female' },
+        { id: 'f1', url: '/avatars/avatar_female_1_1763939836366.png', gender: 'female' },
+        { id: 'f2', url: '/avatars/avatar_female_2_1763939867560.png', gender: 'female' },
+        { id: 'f3', url: '/avatars/avatar_female_3_1763939890818.png', gender: 'female' },
     ];
 
     const filteredAvatars = avatars.filter(avatar => avatar.gender === gender);
@@ -76,8 +76,8 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
                     <button
                         onClick={() => setActiveTab('avatars')}
                         className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${activeTab === 'avatars'
-                                ? 'text-primary border-b-2 border-primary bg-primary/5'
-                                : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
+                            ? 'text-primary border-b-2 border-primary bg-primary/5'
+                            : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
                             }`}
                     >
                         <User className="w-4 h-4" />
@@ -86,8 +86,8 @@ export default function PhotoSelectionModal({ isOpen, onClose, onSelect }: Photo
                     <button
                         onClick={() => setActiveTab('upload')}
                         className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${activeTab === 'upload'
-                                ? 'text-primary border-b-2 border-primary bg-primary/5'
-                                : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
+                            ? 'text-primary border-b-2 border-primary bg-primary/5'
+                            : 'text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800'
                             }`}
                     >
                         <Upload className="w-4 h-4" />
