@@ -54,10 +54,42 @@ export default function Navbar() {
 
                     {/* Desktop Menu - Hidden on mobile/tablet (md and down) */}
                     <div className="hidden md:flex items-center gap-8 text-text-secondary font-medium">
-                        <Link to="/" className="text-primary hover:text-primary-hover transition-colors">Home</Link>
-                        <button onClick={() => scrollToSection('services')} className="hover:text-primary transition-colors">Services</button>
-                        <button onClick={() => scrollToSection('search')} className="hover:text-primary transition-colors">Find Notaries</button>
-                        <Link to="/title-producers" className="hover:text-primary transition-colors">Title Producers</Link>
+                        <Link
+                            to="/"
+                            className={`transition-colors pb-1 border-b-2 ${location.pathname === '/'
+                                ? 'text-primary border-accent'
+                                : 'text-text-secondary border-transparent hover:text-primary'
+                                }`}
+                        >
+                            Home
+                        </Link>
+                        <button
+                            onClick={() => scrollToSection('services')}
+                            className={`transition-colors pb-1 border-b-2 ${location.pathname === '/'
+                                ? 'border-transparent hover:text-primary'
+                                : 'border-transparent hover:text-primary'
+                                }`}
+                        >
+                            Services
+                        </button>
+                        <button
+                            onClick={() => scrollToSection('search')}
+                            className={`transition-colors pb-1 border-b-2 ${location.pathname === '/'
+                                ? 'border-transparent hover:text-primary'
+                                : 'border-transparent hover:text-primary'
+                                }`}
+                        >
+                            Find Notaries
+                        </button>
+                        <Link
+                            to="/title-producers"
+                            className={`transition-colors pb-1 border-b-2 ${location.pathname === '/title-producers'
+                                ? 'text-primary border-accent'
+                                : 'text-text-secondary border-transparent hover:text-primary'
+                                }`}
+                        >
+                            Title Producers
+                        </Link>
                     </div>
 
                     {/* Desktop Auth Buttons - Hidden on mobile/tablet (md and down) */}
@@ -106,26 +138,32 @@ export default function Navbar() {
                     <div className="lg:hidden pt-4 pb-6 border-t border-slate-100 mt-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
                         <Link
                             to="/"
-                            className="text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
+                            className={`font-medium py-2 px-2 rounded-lg border-l-4 ${location.pathname === '/'
+                                    ? 'text-primary border-accent bg-accent/5'
+                                    : 'text-text border-transparent hover:bg-slate-50'
+                                }`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             Home
                         </Link>
                         <button
                             onClick={() => scrollToSection('services')}
-                            className="text-left text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
+                            className="text-left text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg border-l-4 border-transparent"
                         >
                             Services
                         </button>
                         <button
                             onClick={() => scrollToSection('search')}
-                            className="text-left text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
+                            className="text-left text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg border-l-4 border-transparent"
                         >
                             Find Notaries
                         </button>
                         <Link
                             to="/title-producers"
-                            className="text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
+                            className={`font-medium py-2 px-2 rounded-lg border-l-4 ${location.pathname === '/title-producers'
+                                    ? 'text-primary border-accent bg-accent/5'
+                                    : 'text-text border-transparent hover:bg-slate-50'
+                                }`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             Title Producers
