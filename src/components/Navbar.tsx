@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
@@ -15,6 +15,36 @@ export default function Navbar() {
     const navigate = useNavigate();
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState('');
+
+    // Track scroll position to highlight active section
+    useEffect(() => {
+        if (location.pathname !== '/') {
+            setActiveSection('');
+            return;
+        }
+
+        const handleScroll = () => {
+            const sections = ['search', 'services'];
+            const scrollPosition = window.scrollY + 200; // Offset for navbar
+
+            for (const sectionId of sections) {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    const { offsetTop, offsetHeight } = element;
+                    if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+                        setActiveSection(sectionId);
+                        return;
+                    }
+                }
+            }
+            setActiveSection('');
+        };
+
+        handleScroll(); // Check initial position
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [location.pathname]);
 
     const scrollToSection = (id: string) => {
         setIsMobileMenuOpen(false);
@@ -65,8 +95,8 @@ export default function Navbar() {
                         </Link>
                         <button
                             onClick={() => scrollToSection('services')}
-                            className={`transition-colors pb-1 border-b-2 ${location.pathname === '/'
-                                ? 'border-transparent hover:text-primary'
+                            className={`transition-colors pb-1 border-b-2 ${activeSection === 'services'
+                                ? 'text-primary border-accent'
                                 : 'border-transparent hover:text-primary'
                                 }`}
                         >
@@ -74,8 +104,8 @@ export default function Navbar() {
                         </button>
                         <button
                             onClick={() => scrollToSection('search')}
-                            className={`transition-colors pb-1 border-b-2 ${location.pathname === '/'
-                                ? 'border-transparent hover:text-primary'
+                            className={`transition-colors pb-1 border-b-2 ${activeSection === 'search'
+                                ? 'text-primary border-accent'
                                 : 'border-transparent hover:text-primary'
                                 }`}
                         >
@@ -139,8 +169,8 @@ export default function Navbar() {
                         <Link
                             to="/"
                             className={`font-medium py-2 px-2 rounded-lg border-l-4 ${location.pathname === '/'
-                                    ? 'text-primary border-accent bg-accent/5'
-                                    : 'text-text border-transparent hover:bg-slate-50'
+                                ? 'text-primary border-accent bg-accent/5'
+                                : 'text-text border-transparent hover:bg-slate-50'
                                 }`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
@@ -148,21 +178,27 @@ export default function Navbar() {
                         </Link>
                         <button
                             onClick={() => scrollToSection('services')}
-                            className="text-left text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg border-l-4 border-transparent"
+                            className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeSection === 'services'
+                                    ? 'text-primary border-accent bg-accent/5'
+                                    : 'text-text border-transparent hover:bg-slate-50'
+                                }`}
                         >
                             Services
                         </button>
                         <button
                             onClick={() => scrollToSection('search')}
-                            className="text-left text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg border-l-4 border-transparent"
+                            className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeSection === 'search'
+                                    ? 'text-primary border-accent bg-accent/5'
+                                    : 'text-text border-transparent hover:bg-slate-50'
+                                }`}
                         >
                             Find Notaries
                         </button>
                         <Link
                             to="/title-producers"
                             className={`font-medium py-2 px-2 rounded-lg border-l-4 ${location.pathname === '/title-producers'
-                                    ? 'text-primary border-accent bg-accent/5'
-                                    : 'text-text border-transparent hover:bg-slate-50'
+                                ? 'text-primary border-accent bg-accent/5'
+                                : 'text-text border-transparent hover:bg-slate-50'
                                 }`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
