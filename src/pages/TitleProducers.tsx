@@ -37,7 +37,7 @@ export default function TitleProducers() {
     return (
         <div className="min-h-screen bg-white dark:bg-background">
             {/* Hero Section */}
-            <section className="pt-20 pb-16 px-4 text-center max-w-5xl mx-auto">
+            <section className="pt-40 pb-16 px-4 text-center max-w-5xl mx-auto">
                 <h1 className="text-5xl md:text-6xl font-serif text-text mb-6 leading-tight">
                     Licensed Title, Settlement &<br />
                     <span className="font-bold text-accent">TIPIC Professionals</span>

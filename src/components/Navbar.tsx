@@ -55,8 +55,8 @@ export default function Navbar() {
                     {/* Desktop Menu - Hidden on mobile/tablet (md and down) */}
                     <div className="hidden md:flex items-center gap-8 text-text-secondary font-medium">
                         <Link to="/" className="text-primary hover:text-primary-hover transition-colors">Home</Link>
-                        <button onClick={() => scrollToSection('search')} className="hover:text-primary transition-colors">Find Notaries</button>
                         <button onClick={() => scrollToSection('services')} className="hover:text-primary transition-colors">Services</button>
+                        <button onClick={() => scrollToSection('search')} className="hover:text-primary transition-colors">Find Notaries</button>
                         <Link to="/title-producers" className="hover:text-primary transition-colors">Title Producers</Link>
                     </div>
 
@@ -112,16 +112,16 @@ export default function Navbar() {
                             Home
                         </Link>
                         <button
-                            onClick={() => scrollToSection('search')}
-                            className="text-left text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
-                        >
-                            Find Notaries
-                        </button>
-                        <button
                             onClick={() => scrollToSection('services')}
                             className="text-left text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
                         >
                             Services
+                        </button>
+                        <button
+                            onClick={() => scrollToSection('search')}
+                            className="text-left text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
+                        >
+                            Find Notaries
                         </button>
                         <Link
                             to="/title-producers"
