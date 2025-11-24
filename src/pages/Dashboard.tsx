@@ -95,6 +95,15 @@ export default function Dashboard() {
                         <h1 className="text-3xl font-serif text-text mb-2">Dashboard</h1>
                         <p className="text-text-secondary">Welcome back, {user?.email}</p>
                     </div>
+                    {user?.email === 'dferdows@gmail.com' && (
+                        <Link
+                            to="/admin"
+                            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white font-medium rounded-lg transition-colors shadow-sm"
+                        >
+                            <Settings className="w-4 h-4" />
+                            Admin Panel
+                        </Link>
+                    )}
                 </div>
 
                 {/* Profile Actions */}

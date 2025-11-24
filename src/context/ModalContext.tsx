@@ -5,8 +5,9 @@ interface ModalContextType {
     openLogin: () => void;
     closeLogin: () => void;
     isGetListedOpen: boolean;
-    openGetListed: () => void;
+    openGetListed: (role?: 'notary' | 'tipic') => void;
     closeGetListed: () => void;
+    getListedRole: 'notary' | 'tipic';
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -14,10 +15,14 @@ const ModalContext = createContext<ModalContextType | undefined>(undefined);
 export function ModalProvider({ children }: { children: ReactNode }) {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isGetListedOpen, setIsGetListedOpen] = useState(false);
+    const [getListedRole, setGetListedRole] = useState<'notary' | 'tipic'>('notary');
 
     const openLogin = () => setIsLoginOpen(true);
     const closeLogin = () => setIsLoginOpen(false);
-    const openGetListed = () => setIsGetListedOpen(true);
+    const openGetListed = (role: 'notary' | 'tipic' = 'notary') => {
+        setGetListedRole(role);
+        setIsGetListedOpen(true);
+    };
     const closeGetListed = () => setIsGetListedOpen(false);
 
     return (
@@ -27,7 +32,8 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             closeLogin,
             isGetListedOpen,
             openGetListed,
-            closeGetListed
+            closeGetListed,
+            getListedRole
         }}>
             {children}
         </ModalContext.Provider>

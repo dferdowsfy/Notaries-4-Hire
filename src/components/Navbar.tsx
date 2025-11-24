@@ -18,15 +18,26 @@ export default function Navbar() {
 
     const scrollToSection = (id: string) => {
         setIsMobileMenuOpen(false);
+
+        const scroll = () => {
+            const element = document.getElementById(id);
+            if (element) {
+                const navbarHeight = 150; // Navbar height (logo h-32 is 128px + padding)
+                const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                const offsetPosition = elementPosition - navbarHeight;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        };
+
         if (location.pathname !== '/') {
             navigate('/');
-            setTimeout(() => {
-                const element = document.getElementById(id);
-                if (element) element.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
+            setTimeout(scroll, 100);
         } else {
-            const element = document.getElementById(id);
-            if (element) element.scrollIntoView({ behavior: 'smooth' });
+            scroll();
         }
     };
 
@@ -46,6 +57,7 @@ export default function Navbar() {
                         <Link to="/" className="text-primary hover:text-primary-hover transition-colors">Home</Link>
                         <button onClick={() => scrollToSection('search')} className="hover:text-primary transition-colors">Find Notaries</button>
                         <button onClick={() => scrollToSection('services')} className="hover:text-primary transition-colors">Services</button>
+                        <Link to="/title-producers" className="hover:text-primary transition-colors">Title Producers</Link>
                     </div>
 
                     {/* Desktop Auth Buttons - Hidden on mobile/tablet (md and down) */}
@@ -71,7 +83,7 @@ export default function Navbar() {
                                     Log In
                                 </button>
                                 <button
-                                    onClick={openGetListed}
+                                    onClick={() => openGetListed(location.pathname.includes('title-producers') ? 'tipic' : 'notary')}
                                     className="bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-md font-medium transition-colors shadow-sm shadow-primary/30"
                                 >
                                     Get Listed
@@ -111,6 +123,13 @@ export default function Navbar() {
                         >
                             Services
                         </button>
+                        <Link
+                            to="/title-producers"
+                            className="text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Title Producers
+                        </Link>
 
                         <div className="h-px bg-slate-100 my-2"></div>
 
@@ -146,7 +165,7 @@ export default function Navbar() {
                                 </button>
                                 <button
                                     onClick={() => {
-                                        openGetListed();
+                                        openGetListed(location.pathname.includes('title-producers') ? 'tipic' : 'notary');
                                         setIsMobileMenuOpen(false);
                                     }}
                                     className="bg-primary text-white px-5 py-3 rounded-lg font-medium text-center shadow-sm"

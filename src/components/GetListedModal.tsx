@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from './PaymentForm';
+import { useModal } from '../context/ModalContext';
 
 // Initialize Stripe with a test key - REPLACE THIS WITH YOUR ACTUAL PUBLISHABLE KEY
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
@@ -25,6 +26,7 @@ const STEPS = [
 ];
 
 export default function GetListedModal({ isOpen, onClose }: GetListedModalProps) {
+    const { getListedRole } = useModal();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -88,8 +90,9 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
                 subscriptionPlan: 'professional', // Upgraded plan
                 subscriptionStatus: 'active',
                 paymentToken: paymentToken ? paymentToken.id : null, // Store token reference (do not store actual card data)
-                photoUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`, // Generate unique cartoon avatar
-                availability: {}
+                photoUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}&top[]=shortHair&top[]=longHair&top[]=curly&top[]=bob&top[]=bun&top[]=straight01&top[]=straight02&accessoriesChance=0`, // Generate unique cartoon avatar without hats
+                availability: {},
+                role: getListedRole
             });
 
             onClose();
@@ -123,7 +126,9 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
                         <X className="w-6 h-6" />
                     </button>
 
-                    <h2 className="text-2xl font-serif text-text mb-8 text-center">Get Listed as a Notary</h2>
+                    <h2 className="text-2xl font-serif text-text mb-8 text-center">
+                        {getListedRole === 'tipic' ? 'Get Listed as a TIPIC' : 'Get Listed as a Notary'}
+                    </h2>
 
                     {/* Stepper */}
                     <div className="flex items-center justify-center mb-8 px-4">
@@ -234,7 +239,10 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
                             <div className="space-y-4 animate-in slide-in-from-right-4 duration-200">
                                 <p className="text-sm text-text-secondary mb-4">Select the services you offer:</p>
                                 <div className="grid grid-cols-2 gap-3">
-                                    {['Mobile Notary', 'Loan Signing', 'Apostille', 'Remote Online', 'Fingerprinting', 'Wedding Officiant'].map(service => (
+                                    {(getListedRole === 'tipic'
+                                        ? ['Real Estate Settlement', 'Buyer/Seller Closing', 'Refinance Closing', 'Loan Package Execution', 'Title Insurance', 'Funding Coordination']
+                                        : ['Mobile Notary', 'Loan Signing', 'Apostille', 'Remote Online', 'Fingerprinting', 'Wedding Officiant']
+                                    ).map(service => (
                                         <label key={service} className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
                                             <input
                                                 type="checkbox"
@@ -258,6 +266,14 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
                         {step === 4 && (
                             <div className="space-y-4 animate-in slide-in-from-right-4 duration-200">
                                 <PaymentForm onSuccess={handlePaymentSuccess} onError={handlePaymentError} />
+                                <div className="text-center pt-4">
+                                    <button
+                                        onClick={() => handleSubmit(null)}
+                                        className="text-sm text-text-secondary hover:text-primary underline"
+                                    >
+                                        Skip Payment (Test Mode)
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>

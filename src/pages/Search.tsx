@@ -7,6 +7,7 @@ import { db } from '../../firebase';
 export default function Search() {
     const [searchParams] = useSearchParams();
     const queryParam = searchParams.get('q') || '';
+    const typeParam = searchParams.get('type');
     const [results, setResults] = useState<any[]>([]);
     const [allNotaries, setAllNotaries] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState(queryParam);
@@ -36,24 +37,35 @@ export default function Search() {
         fetchNotaries();
     }, []);
 
-    // Filter results based on search query
+    // Filter results based on search query and type
     useEffect(() => {
+        let filtered = allNotaries;
+
+        // Filter by role
+        if (typeParam === 'title-producer') {
+            filtered = filtered.filter(n => n.role === 'tipic');
+        } else {
+            // Default to notary (undefined or 'notary')
+            filtered = filtered.filter(n => !n.role || n.role === 'notary');
+        }
+
+        // Filter by search term
         if (queryParam) {
-            const filtered = allNotaries.filter(n =>
+            filtered = filtered.filter(n =>
                 n.city?.toLowerCase().includes(queryParam.toLowerCase()) ||
                 n.state?.toLowerCase().includes(queryParam.toLowerCase()) ||
                 n.fullName?.toLowerCase().includes(queryParam.toLowerCase()) ||
                 n.services?.some((s: string) => s.toLowerCase().includes(queryParam.toLowerCase()))
             );
-            setResults(filtered);
-        } else {
-            setResults(allNotaries);
         }
+
+        setResults(filtered);
         setSearchTerm(queryParam);
-    }, [queryParam, allNotaries]);
+    }, [queryParam, typeParam, allNotaries]);
 
     const handleSearch = () => {
-        navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+        const typeQuery = typeParam ? `&type=${typeParam}` : '';
+        navigate(`/search?q=${encodeURIComponent(searchTerm)}${typeQuery}`);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -65,7 +77,9 @@ export default function Search() {
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-6">
             <div className="max-w-6xl mx-auto">
-                <h1 className="text-3xl font-serif text-text mb-8">Find a Notary</h1>
+                <h1 className="text-3xl font-serif text-text mb-8">
+                    {typeParam === 'title-producer' ? 'Find a Title Producer / TIPIC' : 'Find a Notary'}
+                </h1>
 
                 {/* Search Bar */}
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-8 flex gap-4">

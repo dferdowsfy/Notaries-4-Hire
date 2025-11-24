@@ -92,7 +92,7 @@ export default function Home() {
                 <div className="mt-12 flex justify-center gap-8 text-xs font-bold tracking-widest text-text-secondary uppercase">
                     <Link to="/search" className="hover:text-primary cursor-pointer">Browse Directory</Link>
                     <span className="text-slate-300">|</span>
-                    <button onClick={openGetListed} className="hover:text-primary cursor-pointer">List Your Business</button>
+                    <button onClick={() => openGetListed()} className="hover:text-primary cursor-pointer">List Your Business</button>
                 </div>
             </section>
 
@@ -191,7 +191,7 @@ export default function Home() {
                             </ul>
 
                             <button
-                                onClick={openGetListed}
+                                onClick={() => openGetListed()}
                                 className="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-lg shadow-primary/20"
                             >
                                 Get Started
@@ -220,7 +220,7 @@ export default function Home() {
                     <div className="text-center py-12">
                         <p className="text-text-secondary mb-4">No notaries listed yet.</p>
                         <button
-                            onClick={openGetListed}
+                            onClick={() => openGetListed()}
                             className="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-lg font-medium transition-colors"
                         >
                             Be the First to Get Listed!

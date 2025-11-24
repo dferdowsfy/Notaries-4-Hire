@@ -24,8 +24,19 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
         state: '',
         bio: '',
         photoUrl: '',
-        services: [] as string[]
+        services: [] as string[],
+        credentials: [] as string[],
+        equipment: [] as string[],
+        languages: [] as string[],
+        ronPlatforms: [] as string[],
+        travel: [] as string[]
     });
+
+    const CREDENTIAL_OPTIONS = ['Government ID', 'Notary Commission', 'Background Check Report', 'E&O Insurance', 'TIPIC License', 'Title Producer License'];
+    const EQUIPMENT_OPTIONS = ['Dual-Tray Printer', 'Laser Printer (can print loan documents)'];
+    const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French', 'Other'];
+    const RON_PLATFORM_OPTIONS = ['DocVerify', 'BlueNotary', 'Nexsys', 'OneNotary', 'Other'];
+    const TRAVEL_OPTIONS = ['Willing to Travel'];
 
     // Load user data
     useEffect(() => {
@@ -41,7 +52,12 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                         state: data.state || '',
                         bio: data.bio || '',
                         photoUrl: data.photoUrl || '',
-                        services: data.services || []
+                        services: data.services || [],
+                        credentials: data.credentials || [],
+                        equipment: data.equipment || [],
+                        languages: data.languages || [],
+                        ronPlatforms: data.ronPlatforms || [],
+                        travel: data.travel || []
                     });
                 }
             }
@@ -81,7 +97,12 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                 state: formData.state,
                 bio: formData.bio,
                 photoUrl: formData.photoUrl,
-                services: formData.services
+                services: formData.services,
+                credentials: formData.credentials,
+                equipment: formData.equipment,
+                languages: formData.languages,
+                ronPlatforms: formData.ronPlatforms,
+                travel: formData.travel
             });
             onClose();
         } catch (error) {
@@ -92,13 +113,16 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
         }
     };
 
-    const toggleService = (service: string) => {
-        setFormData(prev => ({
-            ...prev,
-            services: prev.services.includes(service)
-                ? prev.services.filter(s => s !== service)
-                : [...prev.services, service]
-        }));
+    const toggleArrayField = (field: keyof typeof formData, value: string) => {
+        setFormData(prev => {
+            const currentArray = prev[field] as string[];
+            return {
+                ...prev,
+                [field]: currentArray.includes(value)
+                    ? currentArray.filter(item => item !== value)
+                    : [...currentArray, value]
+            };
+        });
     };
 
     if (!isOpen) return null;
@@ -205,10 +229,100 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                                         <input
                                             type="checkbox"
                                             checked={formData.services.includes(service)}
-                                            onChange={() => toggleService(service)}
+                                            onChange={() => toggleArrayField('services', service)}
                                             className="w-4 h-4 text-primary rounded focus:ring-primary"
                                         />
                                         <span className="text-sm text-text">{service}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Credentials */}
+                        <div>
+                            <label className="block text-sm font-medium text-text mb-3">Verified Credentials</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {CREDENTIAL_OPTIONS.map(item => (
+                                    <label key={item} className="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.credentials.includes(item)}
+                                            onChange={() => toggleArrayField('credentials', item)}
+                                            className="w-4 h-4 text-primary rounded focus:ring-primary"
+                                        />
+                                        <span className="text-sm text-text">{item}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Equipment */}
+                        <div>
+                            <label className="block text-sm font-medium text-text mb-3">Equipment</label>
+                            <div className="grid grid-cols-1 gap-3">
+                                {EQUIPMENT_OPTIONS.map(item => (
+                                    <label key={item} className="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.equipment.includes(item)}
+                                            onChange={() => toggleArrayField('equipment', item)}
+                                            className="w-4 h-4 text-primary rounded focus:ring-primary"
+                                        />
+                                        <span className="text-sm text-text">{item}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Languages */}
+                        <div>
+                            <label className="block text-sm font-medium text-text mb-3">Languages</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {LANGUAGE_OPTIONS.map(item => (
+                                    <label key={item} className="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.languages.includes(item)}
+                                            onChange={() => toggleArrayField('languages', item)}
+                                            className="w-4 h-4 text-primary rounded focus:ring-primary"
+                                        />
+                                        <span className="text-sm text-text">{item}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* RON Platforms */}
+                        <div>
+                            <label className="block text-sm font-medium text-text mb-3">Remote Online Notary Platforms</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {RON_PLATFORM_OPTIONS.map(item => (
+                                    <label key={item} className="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.ronPlatforms.includes(item)}
+                                            onChange={() => toggleArrayField('ronPlatforms', item)}
+                                            className="w-4 h-4 text-primary rounded focus:ring-primary"
+                                        />
+                                        <span className="text-sm text-text">{item}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Travel */}
+                        <div>
+                            <label className="block text-sm font-medium text-text mb-3">Travel</label>
+                            <div className="grid grid-cols-1 gap-3">
+                                {TRAVEL_OPTIONS.map(item => (
+                                    <label key={item} className="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.travel.includes(item)}
+                                            onChange={() => toggleArrayField('travel', item)}
+                                            className="w-4 h-4 text-primary rounded focus:ring-primary"
+                                        />
+                                        <span className="text-sm text-text">{item}</span>
                                     </label>
                                 ))}
                             </div>

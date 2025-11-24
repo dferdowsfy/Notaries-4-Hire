@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import CustomizeProfile from './pages/CustomizeProfile';
 import AdminPanel from './pages/AdminPanel';
+import TitleProducers from './pages/TitleProducers';
 import ResetPassword from './pages/ResetPassword';
 
 function Footer() {
@@ -51,6 +52,7 @@ function AppContent() {
                     <Route path="/profile/:userId" element={<Profile />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/admin" element={<AdminPanel />} />
+                    <Route path="/title-producers" element={<TitleProducers />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     {/* Fallback route for demo purposes */}
                     <Route path="*" element={<Home />} />

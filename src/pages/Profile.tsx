@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
     MapPin, Star, Shield, Clock, Award, CheckCircle,
     Calendar, ChevronRight, MessageSquare, Share2, Flag,
-    Menu, X, ArrowLeft, Phone, Mail
+    Menu, X, ArrowLeft, Phone, Mail, Printer, Laptop
 } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -129,11 +129,11 @@ export default function Profile() {
                 {/* Desktop Back Button */}
                 <div className="hidden lg:block mb-6">
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={() => navigate(profile.role === 'tipic' ? '/title-producers' : '/')}
                         className="flex items-center gap-2 text-[#6B7280] hover:text-[#102A43] transition-colors font-medium"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        Back to Notaries4Hire
+                        {profile.role === 'tipic' ? 'Back to Title Producers' : 'Back to Notaries4Hire'}
                     </button>
                 </div>
 
@@ -232,12 +232,27 @@ export default function Profile() {
                         <section id="overview" className="bg-white rounded-2xl p-8 shadow-sm border border-[#E2E8F0]">
                             <h2 className="text-2xl font-serif font-bold text-[#102A43] mb-4">Overview</h2>
                             <div className="flex flex-wrap gap-2 mb-6">
-                                <span className="px-3 py-1 bg-slate-100 text-[#102A43] rounded-full text-sm font-medium">Mobile Notary</span>
-                                <span className="px-3 py-1 bg-slate-100 text-[#102A43] rounded-full text-sm font-medium">Spanish-speaking</span>
-                                <span className="px-3 py-1 bg-slate-100 text-[#102A43] rounded-full text-sm font-medium">Loan Signing Agent</span>
+                                {profile.role === 'tipic' ? (
+                                    <>
+                                        <span className="px-3 py-1 bg-slate-100 text-[#102A43] rounded-full text-sm font-medium">Title Producer</span>
+                                        <span className="px-3 py-1 bg-slate-100 text-[#102A43] rounded-full text-sm font-medium">Settlement Agent</span>
+                                        <span className="px-3 py-1 bg-slate-100 text-[#102A43] rounded-full text-sm font-medium">Licensed TIPIC</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="px-3 py-1 bg-slate-100 text-[#102A43] rounded-full text-sm font-medium">Mobile Notary</span>
+                                        <span className="px-3 py-1 bg-slate-100 text-[#102A43] rounded-full text-sm font-medium">Spanish-speaking</span>
+                                        <span className="px-3 py-1 bg-slate-100 text-[#102A43] rounded-full text-sm font-medium">Loan Signing Agent</span>
+                                    </>
+                                )}
+                                {profile.languages?.map((lang: string) => (
+                                    <span key={lang} className="px-3 py-1 bg-slate-100 text-[#102A43] rounded-full text-sm font-medium">{lang}</span>
+                                ))}
                             </div>
                             <p className="text-[#6B7280] leading-relaxed mb-8">
-                                {profile.bio || "Experienced notary public providing prompt and reliable mobile notary services. I specialize in loan signings and general notarizations, ensuring accuracy and professionalism in every appointment."}
+                                {profile.bio || (profile.role === 'tipic'
+                                    ? "Licensed Title Insurance Producer Independent Contractor (TIPIC) dedicated to facilitating smooth and secure real estate settlements. I ensure all closing documents are executed accurately and in compliance with state regulations."
+                                    : "Experienced notary public providing prompt and reliable mobile notary services. I specialize in loan signings and general notarizations, ensuring accuracy and professionalism in every appointment.")}
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-[#E2E8F0] pt-6">
                                 <div className="flex items-center gap-3">
@@ -276,12 +291,17 @@ export default function Profile() {
                             <h2 className="text-2xl font-serif font-bold text-[#102A43] mb-6">Why Clients Choose Me</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                                 <ul className="space-y-4">
-                                    {(profile.customSections?.whyChooseMe || [
+                                    {(profile.customSections?.whyChooseMe || (profile.role === 'tipic' ? [
+                                        'Licensed & Bonded Title Producer',
+                                        'Expert in Real Estate Closings',
+                                        'Flexible Scheduling for Settlements',
+                                        'Secure Document Handling'
+                                    ] : [
                                         'Certified & Insured for your peace of mind',
                                         'Evening & Weekend Availability',
                                         'Same-day appointments often available',
                                         'Travel to homes, offices, and hospitals'
-                                    ]).map((item: string, i: number) => (
+                                    ])).map((item: string, i: number) => (
                                         <li key={i} className="flex items-start gap-3">
                                             <div className="mt-1 w-5 h-5 rounded-full bg-[#F4B740]/20 flex items-center justify-center flex-shrink-0">
                                                 <CheckCircle className="w-3 h-3 text-[#F4B740]" />
@@ -304,12 +324,17 @@ export default function Profile() {
                         <section id="services">
                             <h2 className="text-2xl font-serif font-bold text-[#102A43] mb-6">Services & Fees</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {(profile.customSections?.servicesList || [
+                                {(profile.customSections?.servicesList || (profile.role === 'tipic' ? [
+                                    { name: 'Real Estate Settlement', price: '$150', unit: 'starting at', time: '1 hr', type: 'Settlement' },
+                                    { name: 'Refinance Closing', price: '$125', unit: 'flat fee', time: '45 min', type: 'Closing' },
+                                    { name: 'Buyer/Seller Closing', price: '$150', unit: 'per side', time: '1 hr', type: 'Closing' },
+                                    { name: 'Title Abstracting', price: '$75', unit: 'per search', time: 'Varies', type: 'Service' }
+                                ] : [
                                     { name: 'General Notarization', price: '$40', unit: 'per signature', time: '15 min', type: 'Mobile' },
                                     { name: 'Loan Signing', price: '$150', unit: 'flat fee', time: '1-2 hrs', type: 'Mobile' },
                                     { name: 'Remote Notarization', price: '$25', unit: 'per signature', time: '15 min', type: 'Remote' },
                                     { name: 'Apostille Service', price: '$100', unit: 'starting at', time: 'Varies', type: 'Service' }
-                                ]).map((service: any, i: number) => (
+                                ])).map((service: any, i: number) => (
                                     <div key={i} className="bg-white p-6 rounded-xl border border-[#E2E8F0] hover:shadow-md transition-shadow">
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="font-bold text-[#102A43]">{service.name}</h3>
@@ -364,6 +389,11 @@ export default function Profile() {
                             <h2 className="text-2xl font-serif font-bold text-[#102A43] mb-4">Coverage Area</h2>
                             <p className="text-[#6B7280] mb-6">
                                 I provide mobile notary services throughout {profile.city} and the surrounding areas. Travel fees may apply for locations outside of a 10-mile radius.
+                                {profile.travel?.includes('Willing to Travel') && (
+                                    <span className="block mt-2 font-medium text-[#102A43] flex items-center gap-2">
+                                        <CheckCircle className="w-4 h-4 text-green-500" /> Willing to travel for appointments
+                                    </span>
+                                )}
                             </p>
                             <div className="bg-slate-100 rounded-xl h-48 flex items-center justify-center text-[#6B7280]">
                                 <div className="text-center">
@@ -377,21 +407,68 @@ export default function Profile() {
                         <section id="credentials">
                             <h2 className="text-2xl font-serif font-bold text-[#102A43] mb-6">Credentials</h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {[
-                                    { label: 'Licensed Notary', icon: Award },
-                                    { label: 'Background Checked', icon: Shield },
-                                    { label: 'Bonded & Insured', icon: CheckCircle },
-                                    { label: 'NNA Member', icon: Star }
-                                ].map((cred, i) => (
-                                    <div key={i} className="bg-white p-4 rounded-xl border border-[#E2E8F0] flex flex-col items-center text-center gap-2">
-                                        <div className="w-10 h-10 rounded-full bg-[#102A43]/5 flex items-center justify-center text-[#102A43]">
-                                            <cred.icon className="w-5 h-5" />
+                                {(profile.credentials && profile.credentials.length > 0
+                                    ? profile.credentials.map((c: string) => ({
+                                        label: c,
+                                        icon: c.includes('Insurance') ? Shield : c.includes('Background') ? CheckCircle : Award
+                                    }))
+                                    : (profile.role === 'tipic' ? [
+                                        { label: 'Licensed TIPIC', icon: Award },
+                                        { label: 'Title Insurance Lic.', icon: Shield },
+                                        { label: 'E&O Insured', icon: CheckCircle },
+                                        { label: 'Background Checked', icon: Star }
+                                    ] : [
+                                        { label: 'Licensed Notary', icon: Award },
+                                        { label: 'Background Checked', icon: Shield },
+                                        { label: 'Bonded & Insured', icon: CheckCircle },
+                                        { label: 'NNA Member', icon: Star }
+                                    ])).map((cred: any, i: number) => (
+                                        <div key={i} className="bg-white p-4 rounded-xl border border-[#E2E8F0] flex flex-col items-center text-center gap-2">
+                                            <div className="w-10 h-10 rounded-full bg-[#102A43]/5 flex items-center justify-center text-[#102A43]">
+                                                <cred.icon className="w-5 h-5" />
+                                            </div>
+                                            <span className="text-sm font-bold text-[#102A43]">{cred.label}</span>
                                         </div>
-                                        <span className="text-sm font-bold text-[#102A43]">{cred.label}</span>
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
                         </section>
+
+                        {/* Resources & Equipment */}
+                        {(profile.equipment?.length > 0 || profile.ronPlatforms?.length > 0) && (
+                            <section className="bg-white rounded-2xl p-8 shadow-sm border border-[#E2E8F0]">
+                                <h2 className="text-2xl font-serif font-bold text-[#102A43] mb-6">Resources & Equipment</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {profile.equipment?.length > 0 && (
+                                        <div>
+                                            <h3 className="font-bold text-[#102A43] mb-3 flex items-center gap-2">
+                                                <Printer className="w-4 h-4 text-[#F4B740]" /> Equipment
+                                            </h3>
+                                            <ul className="space-y-2">
+                                                {profile.equipment.map((item: string) => (
+                                                    <li key={item} className="flex items-center gap-2 text-[#6B7280]">
+                                                        <CheckCircle className="w-3 h-3 text-green-500" /> {item}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    {profile.ronPlatforms?.length > 0 && (
+                                        <div>
+                                            <h3 className="font-bold text-[#102A43] mb-3 flex items-center gap-2">
+                                                <Laptop className="w-4 h-4 text-[#F4B740]" /> RON Platforms
+                                            </h3>
+                                            <ul className="space-y-2">
+                                                {profile.ronPlatforms.map((item: string) => (
+                                                    <li key={item} className="flex items-center gap-2 text-[#6B7280]">
+                                                        <CheckCircle className="w-3 h-3 text-green-500" /> {item}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            </section>
+                        )}
 
                         {/* Reviews */}
                         <section id="reviews" className="bg-white rounded-2xl p-8 shadow-sm border border-[#E2E8F0]">
@@ -441,11 +518,15 @@ export default function Profile() {
                         <section id="faqs" className="bg-white rounded-2xl p-8 shadow-sm border border-[#E2E8F0]">
                             <h2 className="text-2xl font-serif font-bold text-[#102A43] mb-6">Frequently Asked Questions</h2>
                             <div className="space-y-4">
-                                {[
+                                {(profile.role === 'tipic' ? [
+                                    { q: 'What is a TIPIC?', a: 'A Title Insurance Producer Independent Contractor (TIPIC) is a licensed professional authorized to conduct real estate settlements.' },
+                                    { q: 'Do you handle funds?', a: 'I coordinate the signing of documents. Funds are typically handled directly by the title company or lender via wire transfer.' },
+                                    { q: 'Where can we meet for settlement?', a: 'I can meet at your home, office, or any other convenient location for the closing.' }
+                                ] : [
                                     { q: 'What do I need to bring to the appointment?', a: 'You will need a valid government-issued photo ID (driver\'s license, passport, etc.) and the document(s) to be notarized.' },
                                     { q: 'Do you offer same-day appointments?', a: 'Yes, I often have same-day availability. Please check the schedule or contact me directly to confirm.' },
                                     { q: 'Can you come to my hospital room?', a: 'Yes, I travel to hospitals, nursing homes, and assisted living facilities.' }
-                                ].map((faq, i) => (
+                                ]).map((faq, i) => (
                                     <div key={i} className="border border-[#E2E8F0] rounded-xl p-4">
                                         <h3 className="font-bold text-[#102A43] mb-2 flex items-center gap-2">
                                             <MessageSquare className="w-4 h-4 text-[#F4B740]" />
