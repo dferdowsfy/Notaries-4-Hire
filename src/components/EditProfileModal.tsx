@@ -128,8 +128,22 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     if (!isOpen) return null;
 
     const availableServices = [
-        'Mobile Notary', 'Loan Signing', 'Remote Online Notary',
-        'Apostille Services', 'Wedding Officiant', 'Fingerprinting'
+        'Mobile Notary Services',
+        'Apostille',
+        'Loan Signing',
+        'Fingerprinting',
+        'Live Scan Fingerprinting',
+        'Weddings / Wedding Officiants',
+        'Immigration Services',
+        'Title Producer (TIPIC)',
+        'RON Notary (Remote Online Notary)',
+        'I-9 Verification',
+        'Field Inspections',
+        'Process Serving',
+        'VIN Verification',
+        'Legal Document Preparation',
+        'Translation Services',
+        'Courier / Mobile Office Services'
     ];
 
     return (

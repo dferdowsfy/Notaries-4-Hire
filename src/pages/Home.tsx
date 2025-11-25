@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Car, Globe, Home as HomeIcon, Fingerprint, Heart, Plane, ShieldCheck, Shield, Headphones, Star } from 'lucide-react';
+import { Search, Car, Globe, Home as HomeIcon, Fingerprint, Heart, Plane, ShieldCheck, Shield, Headphones, Star, FileCheck, Users, Truck, ClipboardCheck, FileText, Languages, Package } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useModal } from '../context/ModalContext';
 import { collection, getDocs, query, limit, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 const services = [
-    { icon: Car, label: 'Mobile Notary', count: '2103+ pros' },
+    { icon: Car, label: 'Mobile Notary Services', count: '2103+ pros' },
     { icon: Globe, label: 'Apostille', count: '567+ pros' },
     { icon: HomeIcon, label: 'Loan Signing', count: '1456+ pros' },
     { icon: Fingerprint, label: 'Fingerprinting', count: '892+ pros' },
-    { icon: Heart, label: 'Weddings', count: '892+ pros' },
-    { icon: Plane, label: 'Immigration', count: '645+ pros' },
+    { icon: Fingerprint, label: 'Live Scan Fingerprinting', count: '456+ pros' },
+    { icon: Heart, label: 'Weddings / Wedding Officiants', count: '892+ pros' },
+    { icon: Plane, label: 'Immigration Services', count: '645+ pros' },
+    { icon: FileCheck, label: 'Title Producer (TIPIC)', count: '234+ pros' },
+    { icon: Shield, label: 'RON Notary (Remote Online Notary)', count: '1123+ pros' },
+    { icon: ClipboardCheck, label: 'I-9 Verification', count: '678+ pros' },
+    { icon: Search, label: 'Field Inspections', count: '345+ pros' },
+    { icon: FileText, label: 'Process Serving', count: '423+ pros' },
+    { icon: Car, label: 'VIN Verification', count: '289+ pros' },
+    { icon: FileText, label: 'Legal Document Preparation', count: '567+ pros' },
+    { icon: Languages, label: 'Translation Services', count: '234+ pros' },
+    { icon: Package, label: 'Courier / Mobile Office Services', count: '456+ pros' },
 ];
 
 export default function Home() {
