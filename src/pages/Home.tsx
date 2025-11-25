@@ -6,22 +6,22 @@ import { collection, getDocs, query, limit, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 const services = [
-    { icon: Car, label: 'Mobile Notary Services', count: '2103+ pros' },
-    { icon: Globe, label: 'Apostille', count: '567+ pros' },
-    { icon: HomeIcon, label: 'Loan Signing', count: '1456+ pros' },
-    { icon: Fingerprint, label: 'Fingerprinting', count: '892+ pros' },
-    { icon: Fingerprint, label: 'Live Scan Fingerprinting', count: '456+ pros' },
-    { icon: Heart, label: 'Weddings / Wedding Officiants', count: '892+ pros' },
-    { icon: Plane, label: 'Immigration Services', count: '645+ pros' },
-    { icon: FileCheck, label: 'Title Producer (TIPIC)', count: '234+ pros' },
-    { icon: Shield, label: 'RON Notary (Remote Online Notary)', count: '1123+ pros' },
-    { icon: ClipboardCheck, label: 'I-9 Verification', count: '678+ pros' },
-    { icon: Search, label: 'Field Inspections', count: '345+ pros' },
-    { icon: FileText, label: 'Process Serving', count: '423+ pros' },
-    { icon: Car, label: 'VIN Verification', count: '289+ pros' },
-    { icon: FileText, label: 'Legal Document Preparation', count: '567+ pros' },
-    { icon: Languages, label: 'Translation Services', count: '234+ pros' },
-    { icon: Package, label: 'Courier / Mobile Office Services', count: '456+ pros' },
+    { icon: Car, label: 'Mobile Notary Services' },
+    { icon: Globe, label: 'Apostille' },
+    { icon: HomeIcon, label: 'Loan Signing' },
+    { icon: Fingerprint, label: 'Fingerprinting' },
+    { icon: Fingerprint, label: 'Live Scan Fingerprinting' },
+    { icon: Heart, label: 'Weddings / Wedding Officiants' },
+    { icon: Plane, label: 'Immigration Services' },
+    { icon: FileCheck, label: 'Title Producer (TIPIC)' },
+    { icon: Shield, label: 'RON Notary (Remote Online Notary)' },
+    { icon: ClipboardCheck, label: 'I-9 Verification' },
+    { icon: Search, label: 'Field Inspections' },
+    { icon: FileText, label: 'Process Serving' },
+    { icon: Car, label: 'VIN Verification' },
+    { icon: FileText, label: 'Legal Document Preparation' },
+    { icon: Languages, label: 'Translation Services' },
+    { icon: Package, label: 'Courier / Mobile Office Services' },
 ];
 
 export default function Home() {
@@ -143,8 +143,7 @@ export default function Home() {
                     {services.map((service, index) => (
                         <div key={index} className="group bg-white border border-slate-100 rounded-xl p-8 flex flex-col items-center text-center hover:shadow-xl hover:border-accent/30 transition-all cursor-pointer">
                             <service.icon className="w-8 h-8 text-accent mb-4 group-hover:scale-110 transition-transform" />
-                            <h3 className="font-bold text-text mb-1">{service.label}</h3>
-                            <p className="text-xs text-text-secondary">{service.count}</p>
+                            <h3 className="font-bold text-text">{service.label}</h3>
                         </div>
                     ))}
                 </div>
