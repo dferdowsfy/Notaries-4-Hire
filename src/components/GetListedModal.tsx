@@ -76,6 +76,9 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
             const user = userCredential.user;
 
             // 2. Create Firestore Profile
+            const searchParams = new URLSearchParams(window.location.search);
+            const referralCode = searchParams.get('ref');
+
             await setDoc(doc(db, 'notaries', user.uid), {
                 fullName: formData.fullName,
                 email: formData.email,
@@ -87,6 +90,8 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
                 reviewCount: 0,
                 createdAt: new Date().toISOString(),
                 affiliateCode: user.uid.substring(0, 8).toUpperCase(),
+                referredBy: referralCode || null, // Store the referral code if present
+                commissionRate: 10, // Default commission rate (percentage)
                 subscriptionPlan: 'professional', // Upgraded plan
                 subscriptionStatus: 'active',
                 paymentToken: paymentToken ? paymentToken.id : null, // Store token reference (do not store actual card data)
