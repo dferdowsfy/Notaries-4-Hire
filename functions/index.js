@@ -48,11 +48,28 @@ exports.createStripeSubscription = functions.https.onCall(async (data, context) 
             expand: ["latest_invoice.payment_intent"],
         };
 
-        // Apply coupon if provided
+        // Apply promotion code if provided
+        // Note: Stripe uses 'promotion_code' for the promo code ID, not 'coupon'
+        // We need to look up the promotion code by the code string first
         if (couponCode) {
-            // Validate coupon first (optional, Stripe will throw if invalid)
-            // We'll just pass it to subscription creation
-            subscriptionParams.coupon = couponCode;
+            try {
+                // Look up the promotion code by the code string (e.g., "FRIENDS25")
+                const promoCodes = await stripe.promotionCodes.list({
+                    code: couponCode,
+                    active: true,
+                    limit: 1
+                });
+
+                if (promoCodes.data.length > 0) {
+                    // Use the promotion code ID
+                    subscriptionParams.promotion_code = promoCodes.data[0].id;
+                } else {
+                    throw new Error(`No active promotion code found for: ${couponCode}`);
+                }
+            } catch (promoError) {
+                console.error("Promotion code error:", promoError);
+                throw new functions.https.HttpsError("invalid-argument", `Invalid promotion code: ${couponCode}`);
+            }
         }
 
         const subscription = await stripe.subscriptions.create(subscriptionParams);
