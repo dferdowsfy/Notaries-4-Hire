@@ -103,6 +103,11 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
                     }
                     subscriptionId = data.subscriptionId;
                     customerId = data.customerId;
+
+                    // Show success message if coupon was applied
+                    if (paymentData.couponCode && !paymentData.paymentMethodId) {
+                        console.log(`✓ Coupon ${paymentData.couponCode} successfully applied!`);
+                    }
                 } else {
                     // Should not happen in this flow as we enforce payment/coupon
                     throw new Error('Payment information is missing.');
