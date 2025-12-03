@@ -51,16 +51,16 @@ export default function TitleProducers() {
 
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
                     <button
-                        onClick={() => navigate('/search?type=title-producer')}
-                        className="bg-primary text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary-hover transition-colors shadow-lg"
-                    >
-                        Find a Title Producer / TIPIC
-                    </button>
-                    <button
                         onClick={() => openGetListed('tipic')}
                         className="border-2 border-accent text-primary px-8 py-4 rounded-lg font-bold text-lg hover:bg-accent/10 transition-colors"
                     >
                         Get Listed as a TIPIC
+                    </button>
+                    <button
+                        onClick={() => navigate('/search?type=title-producer')}
+                        className="bg-primary text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary-hover transition-colors shadow-lg"
+                    >
+                        Find a Title Producer / TIPIC
                     </button>
                 </div>
             </section>
@@ -181,10 +181,10 @@ export default function TitleProducers() {
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <button
-                            onClick={() => navigate('/search?type=title-producer')}
+                            onClick={() => openGetListed('tipic')}
                             className="bg-primary text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary-hover transition-colors shadow-lg"
                         >
-                            Find a Title Producer / TIPIC
+                            Get Listed as a TIPIC
                         </button>
                     </div>
                 </div>

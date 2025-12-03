@@ -10,6 +10,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
     const stripe = useStripe();
     const elements = useElements();
     const [loading, setLoading] = useState(false);
+    const [couponCode, setCouponCode] = useState('');
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -22,30 +23,68 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
 
         const cardElement = elements.getElement(CardElement);
 
-        if (!cardElement) {
-            setLoading(false);
-            return;
-        }
+        // Check if card is empty (this is a basic check, ideally we check the element state)
+        // For now, we'll try to create a payment method if the card element exists.
+        // If the user hasn't entered anything, createPaymentMethod might fail or we can skip it.
+        // A better way is to check if the user intends to use a card.
+        // We'll assume if they entered a coupon, they might not want to use a card.
 
-        // In a real application, you would create a PaymentIntent on your backend
-        // and confirm it here. Since we are client-side only for this demo,
-        // we will create a token to simulate the flow.
-        const { error, token } = await stripe.createToken(cardElement);
+        let paymentMethodId = '';
+
+        // Try to create payment method only if we think there's card data
+        // Since we can't easily check if CardElement is empty synchronously without state,
+        // we will try to create it. If it fails with "incomplete", we'll assume they didn't enter one
+        // and try to proceed with just the coupon.
+
+        const { error, paymentMethod } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: cardElement!,
+        });
 
         if (error) {
+            // If error is "incomplete", and we have a coupon, maybe we can try without card?
+            // But stripe.createPaymentMethod validates the card.
+            // If the user didn't type anything, it returns "Your card number is incomplete."
+
+            if (couponCode) {
+                // Try submitting with just coupon
+                onSuccess({
+                    paymentMethodId: '',
+                    couponCode: couponCode
+                });
+                setLoading(false);
+                return;
+            }
+
             onError(error.message || 'An error occurred during payment.');
             setLoading(false);
         } else {
-            // Simulate processing delay
-            setTimeout(() => {
-                onSuccess(token);
-                setLoading(false);
-            }, 1000);
+            onSuccess({
+                paymentMethodId: paymentMethod.id,
+                couponCode: couponCode || undefined
+            });
+            setLoading(false);
         }
     };
 
     return (
         <form id="payment-form" onSubmit={handleSubmit} className="w-full">
+            <div className="mb-6">
+                <label className="block text-sm font-medium text-text mb-2">
+                    Coupon Code (Optional)
+                </label>
+                <input
+                    type="text"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    placeholder="Enter coupon code"
+                    className="w-full p-3 rounded-lg border border-slate-200 focus:border-primary outline-none dark:bg-surface dark:border-700"
+                />
+                <p className="text-xs text-text-secondary mt-1">
+                    If you have a 100% off coupon, you can skip entering card details.
+                </p>
+            </div>
+
             <div className="mb-4">
                 <label className="block text-sm font-medium text-text mb-2">
                     Card Details
@@ -69,6 +108,7 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
                     />
                 </div>
             </div>
+
             <div className="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-100">
                 <div className="flex justify-between items-center mb-2">
                     <span className="font-medium text-text">Professional Plan</span>
@@ -78,6 +118,14 @@ export default function PaymentForm({ onSuccess, onError }: PaymentFormProps) {
                     Includes premium listing, unlimited leads, and verified badge.
                 </p>
             </div>
+
+            <button
+                type="submit"
+                disabled={!stripe || loading}
+                className="w-full bg-primary hover:bg-primary-hover text-white py-3 rounded-lg font-medium text-lg transition-colors shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                {loading ? 'Processing...' : 'Subscribe Now'}
+            </button>
         </form>
     );
 }

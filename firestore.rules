@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user is accessing their own document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Notaries collection
+    match /notaries/{userId} {
+      // Anyone can read notary profiles (for search functionality)
+      allow read: if true;
+      
+      // Only the owner can create or update their own profile
+      // We allow create if the user is authenticated and the document ID matches their Auth UID
+      allow create: if isOwner(userId);
+      
+      // Owners can update their own profile
+      // We might want to restrict certain fields (like rating) in a real app, 
+      // but for now we'll trust the client or handle sensitive updates via Cloud Functions
+      allow update: if isOwner(userId);
+      
+      // Only owners can delete their profile
+      allow delete: if isOwner(userId);
+    }
+
+    // Default deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

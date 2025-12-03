@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { X, Check } from 'lucide-react';
 import { US_STATES } from '../data/states';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, deleteUser } from 'firebase/auth';
 import { auth, db } from '../../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +12,7 @@ import PaymentForm from './PaymentForm';
 import { useModal } from '../context/ModalContext';
 
 // Initialize Stripe with a test key - REPLACE THIS WITH YOUR ACTUAL PUBLISHABLE KEY
-const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+const stripePromise = loadStripe('pk_live_51Pyn6MJcVbd9A9Ta9nWdBpkzcMYaQgZzWzBa03UmX85FO5PDuW1mNJ76YN8Pd91uOLrUhrTQofwQ7PLttuhvn04Q00BTqo54cH');
 
 interface GetListedModalProps {
     isOpen: boolean;
@@ -59,53 +60,92 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
         }
     };
 
-    const handlePaymentSuccess = async (token: any) => {
-        await handleSubmit(token);
+    const handlePaymentSuccess = async (paymentData: { paymentMethodId: string, couponCode?: string }) => {
+        await handleSubmit(paymentData);
     };
 
     const handlePaymentError = (errorMessage: string) => {
         setError(errorMessage);
     };
 
-    const handleSubmit = async (paymentToken?: any) => {
+    const handleSubmit = async (paymentData?: { paymentMethodId: string, couponCode?: string }) => {
         setLoading(true);
         setError('');
+        let userCredential;
+
         try {
             // 1. Create Auth User
-            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
             const user = userCredential.user;
 
-            // 2. Create Firestore Profile
-            const searchParams = new URLSearchParams(window.location.search);
-            const referralCode = searchParams.get('ref');
+            try {
+                // 2. Create Stripe Subscription if payment data is present
+                let subscriptionId = null;
+                let customerId = null;
 
-            await setDoc(doc(db, 'notaries', user.uid), {
-                fullName: formData.fullName,
-                email: formData.email,
-                city: formData.city,
-                state: formData.state,
-                bio: formData.bio,
-                services: formData.services,
-                rating: 0,
-                reviewCount: 0,
-                createdAt: new Date().toISOString(),
-                affiliateCode: user.uid.substring(0, 8).toUpperCase(),
-                referredBy: referralCode || null, // Store the referral code if present
-                commissionRate: 10, // Default commission rate (percentage)
-                subscriptionPlan: 'professional', // Upgraded plan
-                subscriptionStatus: 'active',
-                paymentToken: paymentToken ? paymentToken.id : null, // Store token reference (do not store actual card data)
-                photoUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}&top[]=shortHair&top[]=longHair&top[]=curly&top[]=bob&top[]=bun&top[]=straight01&top[]=straight02&accessoriesChance=0`, // Generate unique cartoon avatar without hats
-                availability: {},
-                role: getListedRole
-            });
+                if (paymentData) {
+                    const { httpsCallable } = await import('firebase/functions');
+                    const { functions } = await import('../../firebase');
+                    const createSubscription = httpsCallable(functions, 'createStripeSubscription');
 
-            onClose();
-            navigate('/dashboard');
+                    const result = await createSubscription({
+                        email: formData.email,
+                        name: formData.fullName,
+                        paymentMethodId: paymentData.paymentMethodId,
+                        couponCode: paymentData.couponCode,
+                        userId: user.uid
+                    });
+
+                    const data = result.data as any;
+                    // Allow 'active' or 'trialing'. If 100% coupon, it might be active.
+                    if (data.status !== 'active' && data.status !== 'trialing') {
+                        throw new Error(`Subscription status is ${data.status}. Payment may require confirmation.`);
+                    }
+                    subscriptionId = data.subscriptionId;
+                    customerId = data.customerId;
+                } else {
+                    // Should not happen in this flow as we enforce payment/coupon
+                    throw new Error('Payment information is missing.');
+                }
+
+                // 3. Create Firestore Profile
+                const searchParams = new URLSearchParams(window.location.search);
+                const referralCode = searchParams.get('ref');
+
+                await setDoc(doc(db, 'notaries', user.uid), {
+                    fullName: formData.fullName,
+                    email: formData.email,
+                    city: formData.city,
+                    state: formData.state,
+                    bio: formData.bio,
+                    services: formData.services,
+                    rating: 0,
+                    reviewCount: 0,
+                    createdAt: new Date().toISOString(),
+                    affiliateCode: user.uid.substring(0, 8).toUpperCase(),
+                    referredBy: referralCode || null,
+                    commissionRate: 10,
+                    subscriptionPlan: 'professional',
+                    subscriptionStatus: 'active',
+                    stripeCustomerId: customerId,
+                    stripeSubscriptionId: subscriptionId,
+                    photoUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}&top[]=shortHair&top[]=longHair&top[]=curly&top[]=bob&top[]=bun&top[]=straight01&top[]=straight02&accessoriesChance=0`,
+                    availability: {},
+                    role: getListedRole
+                });
+
+                onClose();
+                navigate('/dashboard');
+            } catch (innerError: any) {
+                // If subscription or profile creation fails, delete the user so they can try again
+                console.error("Error during setup, rolling back user creation:", innerError);
+                await deleteUser(user);
+                throw innerError;
+            }
+
         } catch (error: any) {
             console.error("Error creating account:", error);
 
-            // User-friendly error messages
             if (error.code === 'auth/email-already-in-use') {
                 setError('This email is already registered. Please use a different email or try logging in.');
             } else if (error.code === 'auth/weak-password') {
@@ -113,7 +153,7 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
             } else if (error.code === 'auth/invalid-email') {
                 setError('Please enter a valid email address.');
             } else {
-                setError('Failed to create account. Please try again.');
+                setError(error.message || 'Failed to create account. Please try again.');
             }
         } finally {
             setLoading(false);
@@ -243,11 +283,26 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
                         {step === 3 && (
                             <div className="space-y-4 animate-in slide-in-from-right-4 duration-200">
                                 <p className="text-sm text-text-secondary mb-4">Select the services you offer:</p>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {(getListedRole === 'tipic'
-                                        ? ['Real Estate Settlement', 'Buyer/Seller Closing', 'Refinance Closing', 'Loan Package Execution', 'Title Insurance', 'Funding Coordination']
-                                        : ['Mobile Notary', 'Loan Signing', 'Apostille', 'Remote Online', 'Fingerprinting', 'Wedding Officiant']
-                                    ).map(service => (
+                                <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
+                                    {[
+                                        'Mobile Notary Services',
+                                        'Apostille',
+                                        'Loan Signing',
+                                        'Fingerprinting',
+                                        'Live Scan Fingerprinting',
+                                        'Weddings / Wedding Officiants',
+                                        'Immigration Services',
+                                        'Title Producer (TIPIC)',
+                                        'RON Notary (Remote Online Notary)',
+                                        'I-9 Verification',
+                                        'Field Inspections',
+                                        'Process Serving',
+                                        'VIN Verification',
+                                        'Legal Document Preparation',
+                                        'Translation Services',
+                                        'Courier / Mobile Office Services',
+                                        'Other'
+                                    ].map(service => (
                                         <label key={service} className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
                                             <input
                                                 type="checkbox"
@@ -271,14 +326,6 @@ export default function GetListedModal({ isOpen, onClose }: GetListedModalProps)
                         {step === 4 && (
                             <div className="space-y-4 animate-in slide-in-from-right-4 duration-200">
                                 <PaymentForm onSuccess={handlePaymentSuccess} onError={handlePaymentError} />
-                                <div className="text-center pt-4">
-                                    <button
-                                        onClick={() => handleSubmit(null)}
-                                        className="text-sm text-text-secondary hover:text-primary underline"
-                                    >
-                                        Skip Payment (Test Mode)
-                                    </button>
-                                </div>
                             </div>
                         )}
                     </div>
