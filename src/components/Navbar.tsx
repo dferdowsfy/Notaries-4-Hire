@@ -114,16 +114,10 @@ export default function Navbar() {
                             Home
                         </Link>
                         <button
-                            onClick={() => scrollToSection('services')}
-                            className={navClass('services')}
-                        >
-                            Services
-                        </button>
-                        <button
                             onClick={() => scrollToSection('search')}
                             className={navClass('search')}
                         >
-                            Find Notaries
+                            Find A Notary
                         </button>
                         <Link
                             to="/title-producers"
@@ -131,6 +125,12 @@ export default function Navbar() {
                         >
                             Title Producers
                         </Link>
+                        <button
+                            onClick={() => scrollToSection('services')}
+                            className={navClass('services')}
+                        >
+                            Services
+                        </button>
                     </div>
 
                     {/* Desktop Auth Buttons - Hidden on mobile/tablet (md and down) */}
@@ -181,40 +181,40 @@ export default function Navbar() {
                             to="/"
                             onClick={() => { setActiveSection(''); setIsMobileMenuOpen(false); }}
                             className={`font-medium py-2 px-2 rounded-lg border-l-4 ${activeNav === 'home'
-                                    ? 'text-primary border-accent bg-accent/5'
-                                    : 'text-text border-transparent hover:bg-slate-50'
+                                ? 'text-primary border-accent bg-accent/5'
+                                : 'text-text border-transparent hover:bg-slate-50'
                                 }`}
                         >
                             Home
                         </Link>
                         <button
-                            onClick={() => scrollToSection('services')}
-                            className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeNav === 'services'
-                                    ? 'text-primary border-accent bg-accent/5'
-                                    : 'text-text border-transparent hover:bg-slate-50'
-                                }`}
-                        >
-                            Services
-                        </button>
-                        <button
                             onClick={() => scrollToSection('search')}
                             className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeNav === 'search'
-                                    ? 'text-primary border-accent bg-accent/5'
-                                    : 'text-text border-transparent hover:bg-slate-50'
+                                ? 'text-primary border-accent bg-accent/5'
+                                : 'text-text border-transparent hover:bg-slate-50'
                                 }`}
                         >
-                            Find Notaries
+                            Find A Notary
                         </button>
                         <Link
                             to="/title-producers"
                             onClick={() => setIsMobileMenuOpen(false)}
                             className={`font-medium py-2 px-2 rounded-lg border-l-4 ${activeNav === 'title-producers'
-                                    ? 'text-primary border-accent bg-accent/5'
-                                    : 'text-text border-transparent hover:bg-slate-50'
+                                ? 'text-primary border-accent bg-accent/5'
+                                : 'text-text border-transparent hover:bg-slate-50'
                                 }`}
                         >
                             Title Producers
                         </Link>
+                        <button
+                            onClick={() => scrollToSection('services')}
+                            className={`text-left font-medium py-2 px-2 rounded-lg border-l-4 ${activeNav === 'services'
+                                ? 'text-primary border-accent bg-accent/5'
+                                : 'text-text border-transparent hover:bg-slate-50'
+                                }`}
+                        >
+                            Services
+                        </button>
 
                         <div className="h-px bg-slate-100 my-2"></div>
 

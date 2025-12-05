@@ -97,7 +97,7 @@ export default function Home() {
                         onClick={handleSearch}
                         className="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-lg font-medium text-lg transition-colors"
                     >
-                        Find Notary
+                        Find A Notary
                     </button>
                 </div>
 
