@@ -10,7 +10,7 @@ import logoFull from '../assets/logo_full.png';
 
 export default function Navbar() {
     const { theme } = useTheme();
-    const { user, logout } = useAuth();
+    const { user, isAdmin, logout } = useAuth();
     const { isLoginOpen, openLogin, closeLogin, isGetListedOpen, openGetListed, closeGetListed } = useModal();
     const navigate = useNavigate();
     const location = useLocation();
@@ -137,8 +137,8 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center gap-6">
                         {user ? (
                             <div className="flex items-center gap-4">
-                                <Link to="/dashboard" className="font-medium text-text hover:text-primary transition-colors">
-                                    Dashboard
+                                <Link to={isAdmin ? '/admin' : '/dashboard'} className="font-medium text-text hover:text-primary transition-colors">
+                                    {isAdmin ? 'Owner Dashboard' : 'Dashboard'}
                                 </Link>
                                 <button
                                     onClick={() => logout()}
@@ -221,11 +221,11 @@ export default function Navbar() {
                         {user ? (
                             <>
                                 <Link
-                                    to="/dashboard"
+                                    to={isAdmin ? '/admin' : '/dashboard'}
                                     className="text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
-                                    Dashboard
+                                    {isAdmin ? 'Owner Dashboard' : 'Dashboard'}
                                 </Link>
                                 <button
                                     onClick={() => {

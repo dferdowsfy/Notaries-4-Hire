@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Flag, AlertTriangle } from 'lucide-react';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 interface ReportModalProps {
     isOpen: boolean;
@@ -11,22 +13,41 @@ interface ReportModalProps {
 export default function ReportModal({ isOpen, onClose, notaryName, notaryId }: ReportModalProps) {
     const [reason, setReason] = useState('Inappropriate Content');
     const [details, setDetails] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState('');
+    const [submitted, setSubmitted] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setReason('Inappropriate Content');
+            setDetails('');
+            setError('');
+            setSubmitted(false);
+        }
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        const subject = encodeURIComponent(`Report Notary: ${notaryName}`);
-        const body = encodeURIComponent(
-            `I would like to report the notary ${notaryName} (ID: ${notaryId}).\n\n` +
-            `Reason: ${reason}\n` +
-            `Details: ${details}\n\n` +
-            `Sent from Notaries4Hire Public Profile`
-        );
-
-        window.location.href = `mailto:dferdows@gmail.com?subject=${subject}&body=${body}`;
-        onClose();
+        setSubmitting(true);
+        setError('');
+        try {
+            await addDoc(collection(db, 'reports'), {
+                notaryId,
+                notaryName: notaryName.slice(0, 200),
+                reason,
+                details: details.trim(),
+                status: 'open',
+                createdAt: serverTimestamp()
+            });
+            setSubmitted(true);
+        } catch (cause) {
+            console.error('Unable to submit profile report', cause);
+            setError('Your report could not be submitted. Please try again.');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -42,7 +63,8 @@ export default function ReportModal({ isOpen, onClose, notaryName, notaryId }: R
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                {submitted ? <div className="p-6 text-center"><h3 className="text-lg font-semibold text-slate-900">Report received</h3><p className="mt-2 text-slate-600">The platform owner can review it in the owner dashboard.</p><button type="button" onClick={onClose} className="mt-5 px-4 py-2 rounded-lg bg-primary text-white">Close</button></div> : <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                    {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-red-700">{error}</p>}
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">Reason for Report</label>
                         <select
@@ -62,6 +84,8 @@ export default function ReportModal({ isOpen, onClose, notaryName, notaryId }: R
                         <label className="block text-sm font-medium text-slate-700 mb-1">Additional Details</label>
                         <textarea
                             required
+                            minLength={10}
+                            maxLength={3000}
                             value={details}
                             onChange={(e) => setDetails(e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none h-32 resize-none"
@@ -72,7 +96,7 @@ export default function ReportModal({ isOpen, onClose, notaryName, notaryId }: R
                     <div className="bg-red-50 p-3 rounded-lg flex gap-3 items-start">
                         <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                         <p className="text-sm text-red-800">
-                            Reports are taken seriously. False reporting may result in account suspension.
+                            The platform owner will review this report.
                         </p>
                     </div>
 
@@ -86,12 +110,13 @@ export default function ReportModal({ isOpen, onClose, notaryName, notaryId }: R
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+                            disabled={submitting}
+                            className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
                         >
-                            Submit Report
+                            {submitting ? 'Submitting…' : 'Submit Report'}
                         </button>
                     </div>
-                </form>
+                </form>}
             </div>
         </div>
     );

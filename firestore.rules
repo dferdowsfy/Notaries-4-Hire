@@ -12,6 +12,10 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.admin == true;
+    }
+
     // Notaries collection
     match /notaries/{userId} {
       // Anyone can read notary profiles (for search functionality)
@@ -19,15 +23,43 @@ service cloud.firestore {
       
       // Only the owner can create or update their own profile
       // We allow create if the user is authenticated and the document ID matches their Auth UID
-      allow create: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && (!('verified' in request.resource.data) || request.resource.data.verified == false)
+        && (!('commissionRate' in request.resource.data) || request.resource.data.commissionRate == 10)
+        && (!('listingStatus' in request.resource.data) || request.resource.data.listingStatus == 'active');
       
       // Owners can update their own profile
       // We might want to restrict certain fields (like rating) in a real app, 
       // but for now we'll trust the client or handle sensitive updates via Cloud Functions
-      allow update: if isOwner(userId);
+      allow update: if (isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['verified', 'commissionRate', 'listingStatus'])
+        && (!('listingStatus' in request.resource.data) || request.resource.data.listingStatus in ['active', 'hidden']))
+        || (isOwner(userId)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['verified', 'commissionRate', 'listingStatus']));
       
       // Only owners can delete their profile
       allow delete: if isOwner(userId);
+    }
+
+    match /reports/{reportId} {
+      allow create: if request.resource.data.keys().hasOnly(['notaryId', 'notaryName', 'reason', 'details', 'status', 'createdAt'])
+        && request.resource.data.keys().hasAll(['notaryId', 'notaryName', 'reason', 'details', 'status', 'createdAt'])
+        && request.resource.data.notaryId is string
+        && request.resource.data.notaryId.size() > 0
+        && request.resource.data.notaryId.size() <= 128
+        && exists(/databases/$(database)/documents/notaries/$(request.resource.data.notaryId))
+        && request.resource.data.notaryName is string
+        && request.resource.data.notaryName.size() <= 200
+        && request.resource.data.reason in ['Inappropriate Content', 'Fake Profile / Impersonation', 'Fraudulent Activity', 'Spam', 'Other']
+        && request.resource.data.details is string
+        && request.resource.data.details.size() >= 10
+        && request.resource.data.details.size() <= 3000
+        && request.resource.data.status == 'open'
+        && request.resource.data.createdAt == request.time;
+      allow read: if isAdmin();
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['open', 'resolved'];
     }
 
     // Default deny all other access

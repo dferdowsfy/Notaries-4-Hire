@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Car, Globe, Home as HomeIcon, Fingerprint, Heart, Plane, ShieldCheck, Shield, Headphones, Star, FileCheck, Users, Truck, ClipboardCheck, FileText, Languages, Package, CheckCircle2, MoreHorizontal } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useModal } from '../context/ModalContext';
-import { collection, getDocs, query, limit, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 const services = [
@@ -38,14 +38,13 @@ export default function Home() {
             try {
                 const q = query(
                     collection(db, 'notaries'),
-                    orderBy('createdAt', 'desc'),
-                    limit(3)
+                    orderBy('createdAt', 'desc')
                 );
                 const querySnapshot = await getDocs(q);
                 const notaries = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
-                }));
+                })).filter((notary: any) => notary.listingStatus !== 'hidden').slice(0, 3);
                 setFeaturedNotaries(notaries);
             } catch (error) {
                 console.error('Error fetching notaries:', error);

@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Send } from 'lucide-react';
 
 interface ContactModalProps {
     isOpen: boolean;
     onClose: () => void;
     notaryName: string;
+    notaryEmail?: string;
 }
 
-export default function ContactModal({ isOpen, onClose, notaryName }: ContactModalProps) {
-    const [loading, setLoading] = useState(false);
+export default function ContactModal({ isOpen, onClose, notaryName, notaryEmail }: ContactModalProps) {
     const [sent, setSent] = useState(false);
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -17,22 +18,26 @@ export default function ContactModal({ isOpen, onClose, notaryName }: ContactMod
         message: ''
     });
 
+    useEffect(() => {
+        if (!isOpen) {
+            setSent(false);
+            setError('');
+        }
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-
-        // Simulate sending email
-        setTimeout(() => {
-            setLoading(false);
-            setSent(true);
-            setTimeout(() => {
-                setSent(false);
-                setFormData({ name: '', email: '', phone: '', message: '' });
-                onClose();
-            }, 2000);
-        }, 1500);
+        setError('');
+        if (!notaryEmail) {
+            setError('This professional has not provided an email address.');
+            return;
+        }
+        const subject = encodeURIComponent(`Service request from ${formData.name}`);
+        const body = encodeURIComponent(`Hello ${notaryName},\n\n${formData.message}\n\nFrom: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || 'Not provided'}\n\nSent via Notaries4Hire`);
+        window.location.href = `mailto:${notaryEmail}?subject=${subject}&body=${body}`;
+        setSent(true);
     };
 
     return (
@@ -51,15 +56,17 @@ export default function ContactModal({ isOpen, onClose, notaryName }: ContactMod
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Send className="w-8 h-8 text-green-600" />
                             </div>
-                            <h2 className="text-2xl font-serif text-text mb-2">Message Sent!</h2>
+                            <h2 className="text-2xl font-serif text-text mb-2">Email draft opened</h2>
                             <p className="text-text-secondary">
-                                Your message has been sent to {notaryName}. They will contact you shortly.
+                                Please press Send in your email app to contact {notaryName}.
                             </p>
+                            <button type="button" onClick={onClose} className="mt-5 text-primary underline">Close</button>
                         </div>
                     ) : (
                         <>
                             <h2 className="text-2xl font-serif text-text mb-2">Contact {notaryName}</h2>
                             <p className="text-text-secondary mb-6">Fill out the form below to request services.</p>
+                            {error && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-3 text-red-700">{error}</p>}
 
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
@@ -108,10 +115,9 @@ export default function ContactModal({ isOpen, onClose, notaryName }: ContactMod
 
                                 <button
                                     type="submit"
-                                    disabled={loading}
-                                    className="w-full bg-primary hover:bg-primary-hover text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 mt-2"
+                                    className="w-full bg-primary hover:bg-primary-hover text-white py-3 rounded-lg font-medium transition-colors mt-2"
                                 >
-                                    {loading ? 'Sending...' : 'Send Message'}
+                                    Open Email Draft
                                 </button>
                             </form>
                         </>

@@ -4,14 +4,36 @@ const Stripe = require("stripe");
 
 admin.initializeApp();
 
-// Initialize Stripe with the Secret Key
-const stripe = new Stripe("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");
+// Configure STRIPE_SECRET_KEY in the Cloud Functions environment.
 
 // REPLACE THIS WITH YOUR ACTUAL STRIPE PRICE ID FOR THE SUBSCRIPTION
 // You can find this in your Stripe Dashboard under Products -> [Your Product] -> Pricing
 const STRIPE_PRICE_ID = "price_1SaNFNJcVbd9A9TaMKF6V2s5";
 
-exports.createStripeSubscription = functions.https.onCall(async (data, context) => {
+exports.getMemberAccount = functions.https.onCall(async (data, context) => {
+    if (context.auth?.token?.admin !== true) {
+        throw new functions.https.HttpsError("permission-denied", "Owner access required.");
+    }
+    const uid = data?.uid;
+    if (typeof uid !== "string" || !uid || uid.length > 128) {
+        throw new functions.https.HttpsError("invalid-argument", "A member ID is required.");
+    }
+    const listing = await admin.firestore().collection("notaries").doc(uid).get();
+    if (!listing.exists) {
+        throw new functions.https.HttpsError("not-found", "Member listing not found.");
+    }
+    try {
+        const member = await admin.auth().getUser(uid);
+        return { email: member.email || null, disabled: member.disabled };
+    } catch (error) {
+        if (error.code === "auth/user-not-found") {
+            throw new functions.https.HttpsError("not-found", "Member account not found.");
+        }
+        throw error;
+    }
+});
+
+exports.createStripeSubscription = functions.runWith({ secrets: ["STRIPE_SECRET_KEY"] }).https.onCall(async (data, context) => {
     // 1. Check authentication
     if (!context.auth) {
         throw new functions.https.HttpsError(
@@ -20,7 +42,13 @@ exports.createStripeSubscription = functions.https.onCall(async (data, context) 
         );
     }
 
-    const { email, name, paymentMethodId, couponCode, userId } = data;
+    const { email, name, paymentMethodId, couponCode } = data;
+    const userId = context.auth.uid;
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeKey) {
+        throw new functions.https.HttpsError("failed-precondition", "Stripe is not configured.");
+    }
+    const stripe = new Stripe(stripeKey);
 
     try {
         // 2. Create a Stripe Customer
@@ -73,13 +101,6 @@ exports.createStripeSubscription = functions.https.onCall(async (data, context) 
         }
 
         const subscription = await stripe.subscriptions.create(subscriptionParams);
-
-        // 4. Update Firestore with Stripe Customer ID (optional, but good practice)
-        // The client also does this, but doing it here is safer.
-        await admin.firestore().collection("notaries").doc(userId).update({
-            stripeCustomerId: customer.id,
-            stripeSubscriptionId: subscription.id
-        });
 
         return {
             subscriptionId: subscription.id,

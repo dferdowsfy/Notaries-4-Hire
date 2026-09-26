@@ -15,7 +15,7 @@ import BookingModal from '../components/BookingModal';
 
 export default function Profile() {
     const { userId } = useParams();
-    const { user: currentUser } = useAuth();
+    const { user: currentUser, isAdmin } = useAuth();
     const navigate = useNavigate();
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -75,7 +75,7 @@ export default function Profile() {
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-[#F5F7FB]">Loading...</div>;
-    if (!profile) return <div className="min-h-screen flex items-center justify-center bg-[#F5F7FB]">Profile not found</div>;
+    if (!profile || (profile.listingStatus === 'hidden' && currentUser?.uid !== profile.id && !isAdmin)) return <div className="min-h-screen flex items-center justify-center bg-[#F5F7FB]">Profile not available</div>;
 
     const navItems = [
         { id: 'overview', label: 'Overview', icon: Shield },
@@ -541,7 +541,7 @@ export default function Profile() {
                 </div>
             </div>
 
-            <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} notaryName={profile.fullName} />
+            <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} notaryName={profile.fullName} notaryEmail={profile.email} />
             <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} notaryName={profile.fullName} notaryEmail={profile.email} />
             <ReportModal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} notaryName={profile.fullName} notaryId={profile.id} />
         </div>

@@ -34,9 +34,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         setLoading(true);
 
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            const credential = await signInWithEmailAndPassword(auth, email, password);
+            const token = await credential.user.getIdTokenResult();
             onClose();
-            navigate('/dashboard');
+            navigate(token.claims.admin === true ? '/admin' : '/dashboard');
         } catch (err) {
             setError('Failed to log in. Please check your credentials.');
         } finally {

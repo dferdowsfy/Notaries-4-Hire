@@ -24,7 +24,7 @@ export default function Search() {
                 const notaries = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
-                }));
+                })).filter((notary: any) => notary.listingStatus !== 'hidden');
                 setAllNotaries(notaries);
                 setResults(notaries);
             } catch (error) {
