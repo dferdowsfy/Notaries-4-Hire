@@ -137,9 +137,10 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center gap-6">
                         {user ? (
                             <div className="flex items-center gap-4">
-                                <Link to={isAdmin ? '/admin' : '/dashboard'} className="font-medium text-text hover:text-primary transition-colors">
-                                    {isAdmin ? 'Owner Dashboard' : 'Dashboard'}
+                                <Link to="/dashboard" className="font-medium text-text hover:text-primary transition-colors">
+                                    Dashboard
                                 </Link>
+                                {isAdmin && <Link to="/admin" className="font-medium text-text hover:text-primary transition-colors">Admin Panel</Link>}
                                 <button
                                     onClick={() => logout()}
                                     className="text-sm text-text-secondary hover:text-red-500 transition-colors"
@@ -221,12 +222,19 @@ export default function Navbar() {
                         {user ? (
                             <>
                                 <Link
-                                    to={isAdmin ? '/admin' : '/dashboard'}
+                                    to="/dashboard"
                                     className="text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
-                                    {isAdmin ? 'Owner Dashboard' : 'Dashboard'}
+                                    Dashboard
                                 </Link>
+                                {isAdmin && <Link
+                                    to="/admin"
+                                    className="text-text font-medium py-2 px-2 hover:bg-slate-50 rounded-lg"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Admin Panel
+                                </Link>}
                                 <button
                                     onClick={() => {
                                         logout();

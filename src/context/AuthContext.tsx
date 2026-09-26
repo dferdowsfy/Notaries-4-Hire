@@ -29,7 +29,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return;
             }
             try {
-                const token = await currentUser.getIdTokenResult();
+                // Refresh claims when the app loads so newly granted admins do not
+                // have to wait for a cached token to expire before seeing their link.
+                const token = await currentUser.getIdTokenResult(true);
                 if (auth.currentUser?.uid === currentUser.uid) setIsAdmin(token.claims.admin === true);
             } catch (error) {
                 console.error('Unable to check owner access', error);
